@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Vocabulary Listener Game</title>
+    <!-- Load Font Awesome for the speaker icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Load Tailwind CSS for utility classes and layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Styles for Game Aesthetics */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1f2937; /* Dark Gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .game-container {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            max-width: 600px;
+            width: 100%;
+            border: 4px solid #3b82f6; /* Blue border */
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .game-button {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            text-transform: uppercase;
+        }
+
+        /* Level 1 (Default/Not complete): Light Blue */
+        .game-button.default {
+            background-color: #38bdf8; /* Sky-400 (Light Blue) */
+            color: white;
+            box-shadow: 0 4px #0284c7; /* Sky-700 */
+        }
+        .game-button.default:hover { background-color: #0ea5e9; } /* Sky-500 */
+        .game-button.default:active { box-shadow: 0 0 #0284c7; transform: translateY(4px); }
+
+        /* Level 2 (Unlocked/Complete Level 1): Dark Blue */
+        .game-button.unlocked {
+            background-color: #1e3a8a; /* Blue-900 (Dark Blue) */
+            color: white;
+            box-shadow: 0 4px #1e3a8a; /* Blue-900 */
+        }
+        .game-button.unlocked:hover { background-color: #172554; } /* Blue-950 */
+        .game-button.unlocked:active { box-shadow: 0 0 #1e3a8a; transform: translateY(4px); }
+
+        /* Level 3 (Mastered): Green */
+        .game-button.mastered {
+            background-color: #059669; /* Emerald-600 */
+            color: white;
+            box-shadow: 0 4px #047857; /* Emerald-700 */
+        }
+        .game-button.mastered:hover { background-color: #047857; }
+        .game-button.mastered:active { box-shadow: 0 0 #047857; transform: translateY(4px); }
+        
+        /* TTS Button (Main Level 1 Speaker) */
+        .tts-button {
+            padding: 1rem;
+            background-color: #10b981; /* Emerald */
+            color: white;
+            border-radius: 9999px; /* Round */
+            width: 80px;
+            height: 80px;
+            box-shadow: 0 6px #059669;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .tts-button:active {
+            box-shadow: 0 0 #059669;
+            transform: translateY(6px);
+        }
+        
+        #tts-icon {
+            font-size: 2.5rem;
+            line-height: 1; 
+            display: block;
+        }
+
+        /* Microphone Button (Level 3) */
+        #mic-btn-3 {
+            background-color: #ef4444; /* Red */
+            box-shadow: 0 6px #b91c1c; /* Darker Red */
+        }
+        #mic-btn-3.recording {
+            background-color: #f59e0b; /* Amber */
+            box-shadow: 0 6px #d97706;
+        }
+
+        /* Image Styles (Level 1 Options & Level 2/3 Target) */
+        .image-option, #target-image-2, #target-image-3 {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+            border: 4px solid #e5e7eb;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Border styles for Level 1 (Image options) */
+        .image-option.correct {
+            border-color: #10b981; 
+            border-width: 6px;
+            box-shadow: 0 0 20px #10b981;
+        }
+        .image-option.incorrect {
+            border-color: #ef4444; 
+            border-width: 6px;
+            box-shadow: 0 0 10px #ef4444;
+        }
+
+        /* Button styles for Level 2 options */
+        .level2-play-btn {
+            background-color: #4f46e5; /* Indigo */
+            color: white;
+            box-shadow: 0 4px #3730a3;
+            height: 48px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .level2-play-btn:active {
+             box-shadow: 0 0 #3730a3;
+             transform: translateY(4px);
+        }
+        .level2-play-btn .fas {
+            font-size: 1.25rem;
+        }
+        
+        .level2-select-btn {
+            background-color: #f59e0b; /* Amber-500 */
+            color: white;
+            box-shadow: 0 4px #b45309; /* Amber-700 */
+            height: 48px;
+            font-size: 1rem;
+        }
+
+        /* Level 2 Answer Feedback Colors (applied to Select button) */
+        .level2-select-btn.correct {
+            background-color: #10b981 !important;
+            box-shadow: 0 4px #059669;
+        }
+        .level2-select-btn.incorrect {
+            background-color: #ef4444 !important;
+            box-shadow: 0 4px #b91c1c;
+        }
+
+        /* Class for disabled state during audio loading */
+        .loading-audio {
+            opacity: 0.5;
+            pointer-events: none; /* Disables click interactions for images/buttons */
+            cursor: default;
+        }
+
+        /* NEW: Level 3 Hint button style */
+        #tts-hint-btn-3 {
+            background-color: #4f46e5; /* Indigo */
+            box-shadow: 0 6px #3730a3;
+        }
+
+
+        /* Spinner CSS for loading state */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <header class="text-center pb-4 mb-4 border-b-2 border-gray-100">
+        <h1 class="text-3xl font-extrabold text-gray-800">Vocabulary Builder</h1>
+        <p class="text-sm text-gray-500 mt-1">Listen, Match, and Pronounce!</p>
+        <div class="mt-3 flex justify-between items-center px-4">
+            <span class="text-lg font-bold text-gray-700">Global Score: <span id="score">0.0</span></span>
+            <button id="back-to-home-btn" class="text-sm text-blue-600 hover:text-blue-800 font-semibold hidden" onclick="App.showHomeScreen()">← Change Theme</button>
+        </div>
+    </header>
+
+    <!-- MAIN VIEWS CONTAINER -->
+    <div id="game-screens">
+        
+        <!-- 1. HOME SCREEN (CATEGORY SELECTION) -->
+        <div id="home-screen" class="p-4">
+            <h2 class="text-xl font-bold text-gray-700 mb-4 text-center">Choose a Learning Theme:</h2>
+            <div id="category-list" class="category-grid">
+                <!-- Category buttons will be inserted here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- 2. LEVEL 1 QUIZ SCREEN (Audio to Image) -->
+        <div id="level1-screen" class="hidden text-center p-4">
+            <h2 id="current-theme-title-1" class="text-2xl font-bold text-blue-600 mb-6">Theme: Loading...</h2>
+
+            <p class="text-lg font-semibold text-gray-600 mb-6">
+                Question <span id="current-question-count-1">0</span> / <span id="total-question-count-1">0</span>
+            </p>
+
+            <!-- TTS Button with Font Awesome Icon -->
+            <button id="tts-btn-1" class="tts-button" onclick="App.speakWord(App.state.currentWord.word)">
+                <span id="tts-icon-1">
+                    <i class="fas fa-volume-up"></i>
+                </span>
+            </button>
+            <p class="text-lg font-semibold text-gray-600 mb-6">Tap to hear the word!</p>
+
+            <!-- Image Options -->
+            <div id="image-options-container" class="grid grid-cols-3 gap-4">
+                <!-- Image options will be inserted here -->
+            </div>
+
+            <!-- Feedback and Next Button -->
+            <div id="feedback-area-1" class="mt-6 min-h-12">
+                <p id="feedback-text-1" class="text-lg font-bold"></p>
+                <button id="next-level1-btn" class="game-button w-full mt-4 bg-indigo-500 hidden" onclick="App.loadNextLevel1Question()">NEXT WORD</button>
+            </div>
+        </div>
+        
+        <!-- 3. LEVEL 2 QUIZ SCREEN (Image to Audio) -->
+        <div id="level2-screen" class="hidden text-center p-4">
+            <h2 id="current-theme-title-2" class="text-2xl font-bold text-green-600 mb-6">Theme: Loading...</h2>
+            
+            <p class="text-lg font-semibold text-gray-600 mb-6">
+                Question <span id="current-question-count-2">0</span> / <span id="total-question-count-2">0</span>
+            </p>
+
+            <!-- Target Image -->
+            <div class="h-48 flex justify-center items-center mb-6">
+                <img id="target-image-2" class="max-h-full max-w-full rounded-lg shadow-xl border-4 border-gray-200" src="" alt="Target Image">
+            </div>
+
+            <p class="text-lg font-semibold text-gray-600 mb-6">Which word do you hear?</p>
+
+            <!-- Audio Options (New Structure) -->
+            <div id="audio-options-container" class="grid grid-cols-3 gap-3">
+                <!-- Option 1 -->
+                <div class="flex flex-col gap-2">
+                    <button class="level2-play-btn game-button loading-audio" data-word=""><i class="fas fa-volume-up"></i> Listen</button>
+                    <button class="level2-select-btn game-button loading-audio" data-word="">Select</button>
+                </div>
+                <!-- Option 2 -->
+                <div class="flex flex-col gap-2">
+                    <button class="level2-play-btn game-button loading-audio" data-word=""><i class="fas fa-volume-up"></i> Listen</button>
+                    <button class="level2-select-btn game-button loading-audio" data-word="">Select</button>
+                </div>
+                <!-- Option 3 -->
+                <div class="flex flex-col gap-2">
+                    <button class="level2-play-btn game-button loading-audio" data-word=""><i class="fas fa-volume-up"></i> Listen</button>
+                    <button class="level2-select-btn game-button loading-audio" data-word="">Select</button>
+                </div>
+            </div>
+
+            <!-- Feedback and Next Button -->
+            <div id="feedback-area-2" class="mt-6 min-h-12">
+                <p id="feedback-text-2" class="text-lg font-bold"></p>
+                <button id="next-level2-btn" class="game-button w-full mt-4 bg-indigo-500 hidden" onclick="App.loadNextLevel2Question()">NEXT WORD</button>
+            </div>
+        </div>
+
+        <!-- 4. LEVEL 3 QUIZ SCREEN (Speech Recognition) -->
+        <div id="level3-screen" class="hidden text-center p-4">
+            <h2 id="current-theme-title-3" class="text-2xl font-bold text-red-600 mb-6">Theme: Loading...</h2>
+            
+            <p class="text-lg font-semibold text-gray-600 mb-6">
+                Question <span id="current-question-count-3">0</span> / <span id="total-question-count-3">0</span>
+            </p>
+
+            <!-- Target Image -->
+            <div class="h-48 flex justify-center items-center mb-6">
+                <img id="target-image-3" class="max-h-full max-w-full rounded-lg shadow-xl border-4 border-gray-200" src="" alt="Target Image">
+            </div>
+
+            <p class="text-lg font-semibold text-gray-600 mb-6">Pronounce the word matching the image (Hint available):</p>
+
+            <!-- Microphone Button and HINT Button (NEW FLEX CONTAINER) -->
+            <div class="flex justify-center items-center space-x-6">
+                <!-- Microphone Button -->
+                <button id="mic-btn-3" class="tts-button" onclick="App.startSpeechRecognition()">
+                    <span id="mic-icon-3">
+                        <i class="fas fa-microphone"></i>
+                    </span>
+                </button>
+                <!-- HINT Speaker Button (NEW) -->
+                <button id="tts-hint-btn-3" class="tts-button !bg-indigo-500" onclick="App.speakWord(App.state.currentWord.word)">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+
+            <p id="recognition-status" class="text-sm text-gray-500 mt-2 min-h-6">Tap the microphone to speak.</p>
+
+            <!-- Feedback and Next Button -->
+            <div id="feedback-area-3" class="mt-6 min-h-12">
+                <p id="feedback-text-3" class="text-lg font-bold"></p>
+                <button id="next-level3-btn" class="game-button w-full mt-4 bg-indigo-500 hidden" onclick="App.loadNextLevel3Question()">NEXT WORD</button>
+            </div>
+        </div>
+        
+        <!-- 5. LEVEL COMPLETE SCREEN -->
+        <div id="level-complete-screen" class="hidden text-center p-4">
+            <h2 class="text-3xl font-bold text-green-600 mb-4">LEVEL COMPLETE!</h2>
+            <p class="text-xl text-gray-700 mb-6">You successfully completed <span id="completed-theme"></span>!</p>
+            <p class="text-lg text-gray-600 mb-8">Score gained in this level: <span id="theme-score" class="font-bold text-purple-600">0.0</span></p>
+            
+            <button class="game-button default w-full mb-3" onclick="App.showHomeScreen()">BACK TO THEME SELECTION</button>
+            <p class="text-sm text-gray-500 mt-4"><span id="next-level-message"></span></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- TTS API CONFIG ---
+    const API_MODEL = "gemini-2.5-flash-preview-tts";
+    const API_KEY = ""; 
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent?key=${API_KEY}`;
+    const TTS_VOICE = "Kore"; 
+    const MAX_RETRIES = 5;
+    const PROGRESS_KEY = 'vocab_game_progress'; // localStorage key
+    
+    // --- SPEECH RECOGNITION SETUP ---
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1; 
+    }
+
+    // --- GAME DATA STRUCTURE (Definitive list with file extensions) ---
+    const BASE_IMAGE_URL = "https://regine-lambrecht.github.io/ingles_Mikael/images/";
+    
+    // Structure: { word: "Word", ext: ".ext" }
+    const WORD_DATA_DETAILS = {
+        "Animals": [
+            { word: "Bird", ext: ".png" }, { word: "Cat", ext: ".png" }, { word: "Chicken", ext: ".png" },
+            { word: "Cow", ext: ".png" }, { word: "Dog", ext: ".jpg" }, { word: "Duck", ext: ".jpg" },
+            { word: "Elephant", ext: ".jpg" }, { word: "Fish", ext: ".png" }, { word: "Frog", ext: ".jpg" },
+            { word: "Horse", ext: ".jpg" }, { word: "Lion", ext: ".jpg" }, { word: "Monkey", ext: ".jpg" },
+            { word: "Pig", ext: ".jpg" }, { word: "Rabbit", ext: ".jpg" }, { word: "Snake", ext: ".jpg" },
+            { word: "Turtle", ext: ".jpg" }
+        ],
+        "Body": [
+            { word: "Chest", ext: ".png" }, { word: "Ear", ext: ".png" }, { word: "Eye", ext: ".png" },
+            { word: "Foot", ext: ".png" }, { word: "Hair", ext: ".png" }, { word: "Hand", ext: ".png" },
+            { word: "Knee", ext: ".png" }, { word: "Mouth", ext: ".png" }, { word: "Neck", ext: ".png" },
+            { word: "Nose", ext: ".png" }
+        ],
+        "Clothes": [
+            { word: "Hat", ext: ".jpg" }, { word: "Shoes", ext: ".png" }, { word: "T-shirt", ext: ".png" },
+            { word: "Belt", ext: ".png" }, { word: "Boxer", ext: ".png" }, { word: "Cap", ext: ".png" },
+            { word: "Jacket", ext: ".png" }, { word: "Pants", ext: ".png" }, { word: "Pijama", ext: ".png" },
+            { word: "Shorts", ext: ".png" }, { word: "Skirt", ext: ".png" }, { word: "Socks", ext: ".png" },
+            { word: "Sweater", ext: ".jpg" }
+        ],
+        "Colours": [
+            { word: "Black", ext: ".png" }, { word: "Dark blue", ext: ".png" }, { word: "Green", ext: ".png" },
+            { word: "Light blue", ext: ".png" }, { word: "Orange", ext: ".png" }, { word: "Pink", ext: ".png" },
+            { word: "Purple", ext: ".png" }, { word: "Red", ext: ".png" }, { word: "White", ext: ".png" },
+            { word: "Yellow", ext: ".png" }
+        ],
+        "Family": [
+            { word: "Brother", ext: ".png" }, { word: "Father", ext: ".png" }, { word: "Grand-father", ext: ".png" },
+            { word: "Grand-mother", ext: ".png" }, { word: "Mother", ext: ".png" }, { word: "Sister", ext: ".png" }
+        ],
+        "Food": [
+            { word: "Apple", ext: ".jpg" }, { word: "Banana", ext: ".png" }, { word: "Bread", ext: ".jpg" },
+            { word: "Carrot", ext: ".png" }, { word: "Cherry", ext: ".png" }, { word: "Chocolate", ext: ".png" },
+            { word: "Grapes", ext: ".jpg" }, { word: "Ice cream", ext: ".png" }, { word: "Lemon", ext: ".jpg" },
+            { word: "Meal", ext: ".jpg" }, { word: "Oil", ext: ".jpg" }, { word: "Onion", ext: ".png" },
+            { word: "Orange", ext: ".png" }, { word: "Orange juice", ext: ".png" }, { word: "Pear", ext: ".png" },
+            { word: "Pepper", ext: ".png" }, { word: "Potato", ext: ".jpg" }, { word: "Rice", ext: ".jpg" },
+            { word: "Salad", ext: ".png" }, { word: "Salt", ext: ".png" }, { word: "Strawberry", ext: ".jpg" },
+            { word: "Tomato", ext: ".jpg" }, { word: "Water", ext: ".jpg" }
+        ],
+        "House": [
+            { word: "Bathroom", ext: ".png" }, { word: "Bedroom", ext: ".png" }, { word: "Dining room", ext: ".png" },
+            { word: "Door", ext: ".jpg" }, { word: "Kitchen", ext: ".png" }, { word: "Living room", ext: ".png" },
+            { word: "Office", ext: ".png" }, { word: "Toilet", ext: ".png" }, { word: "Window", ext: ".jpg" }
+        ],
+        "Numbers": [
+            { word: "One", ext: ".png" }, { word: "Two", ext: ".png" }, { word: "Three", ext: ".png" },
+            { word: "Four", ext: ".png" }, { word: "Five", ext: ".png" }, { word: "Six", ext: ".png" },
+            { word: "Seven", ext: ".png" }, { word: "Eight", ext: ".png" }, { word: "Nine", ext: ".png" },
+            { word: "Ten", ext: ".png" }, { word: "Eleven", ext: ".png" }, { word: "Twelve", ext: ".png" },
+            { word: "Thirteen", ext: ".png" }, { word: "Fourteen", ext: ".png" }, { word: "Fifteen", ext: ".png" },
+            { word: "Sixteen", ext: ".png" }, { word: "Seventeen", ext: ".png" }, { word: "Eighteen", ext: ".png" },
+            { word: "Nineteen", ext: ".png" }, { word: "Twenty", ext: ".png" }, { word: "Thirty", ext: ".png" },
+            { word: "Fourty", ext: ".png" }, { word: "Fifty", ext: ".png" }, { word: "Sixty", ext: ".png" },
+            { word: "Seventy", ext: ".png" }, { word: "Eighty", ext: ".png" }, { word: "Ninety", ext: ".png" },
+            { word: "First", ext: ".png" }, { word: "Second", ext: ".png" }, { word: "Third", ext: ".png" },
+            { word: "Fourth", ext: ".png" }, { word: "Fifth", ext: ".png" }, { word: "Sixth", ext: ".png" },
+            { word: "Seventh", ext: ".png" }, { word: "Eighth", ext: ".png" }, { word: "Nineth", ext: ".png" }
+        ],
+        "Objects": [
+            { word: "Ball", ext: ".jpg" }, { word: "Book", ext: ".jpg" }, { word: "Bowl", ext: ".jpg" },
+            { word: "Chair", ext: ".jpg" }, { word: "Fork", ext: ".jpg" }, { word: "Glass", ext: ".jpg" },
+            { word: "Key", ext: ".jpg" }, { word: "Pencil", ext: ".jpg" }, { word: "Plate", ext: ".png" },
+            { word: "Spoon", ext: ".jpg" }, { word: "Sword", ext: ".jpg" }, { word: "Table", ext: ".png" },
+            { word: "Watch", ext: ".jpg" }
+        ],
+        "Opposites": [
+            { word: "Bad", ext: ".png" }, { word: "Cheap", ext: ".png" }, { word: "Cold", ext: ".png" },
+            { word: "Day", ext: ".png" }, { word: "Empty", ext: ".png" }, { word: "Expensive", ext: ".png" },
+            { word: "Fast", ext: ".jpg" }, { word: "Fat", ext: ".png" }, { word: "Full", ext: ".png" },
+            { word: "Future", ext: ".png" }, { word: "Go down", ext: ".png" }, { word: "Go up", ext: ".jpg" },
+            { word: "Good", ext: ".png" }, { word: "Happy", ext: ".png" }, { word: "Heavy", ext: ".png" },
+            { word: "High", ext: ".png" }, { word: "Hot", ext: ".png" }, { word: "Left", ext: ".png" },
+            { word: "Light", ext: ".jpg" }, { word: "Low", ext: ".png" }, { word: "Next", ext: ".png" },
+            { word: "Night", ext: ".png" }, { word: "Old", ext: ".png" }, { word: "Past", ext: ".png" },
+            { word: "Previous", ext: ".png" }, { word: "Right", ext: ".png" }, { word: "Sad", ext: ".png" },
+            { word: "Slow", ext: ".jpg" }, { word: "Small", ext: ".png" }, { word: "Start", ext: ".png" },
+            { word: "Stop", ext: ".png" }, { word: "Tall", ext: ".png" }, { word: "Thin", ext: ".png" },
+            { word: "Turn off", ext: ".png" }, { word: "Turn on", ext: ".png" }, { word: "Wrong", ext: ".png" },
+            { word: "Young", ext: ".png" }
+        ],
+        "Places": [
+            { word: "Bank", ext: ".png" }, { word: "Brazil", ext: ".jpg" }, { word: "Church", ext: ".png" },
+            { word: "Cinema", ext: ".jpg" }, { word: "Home", ext: ".jpg" }, { word: "Hospital", ext: ".png" },
+            { word: "Restaurant", ext: ".jpg" }, { word: "School", ext: ".jpg" }, { word: "Station", ext: ".jpg" },
+            { word: "Supermarket", ext: ".jpg" }, { word: "Swimming pool", ext: ".png" }
+        ],
+        "Others": [
+            { word: "Bag", ext: ".jpg" }, { word: "Behind", ext: ".jpg" }, { word: "Between", ext: ".jpg" },
+            { word: "Birthday", ext: ".jpg" }, { word: "Box", ext: ".png" }, { word: "Car", ext: ".jpg" },
+            { word: "Cloudy", ext: ".png" }, { word: "Computer", ext: ".png" }, { word: "Football", ext: ".png" },
+            { word: "Guitar", ext: ".png" }, { word: "In", ext: ".jpg" }, { word: "In front of", ext: ".jpg" },
+            { word: "Mobile phone", ext: ".png" }, { word: "Next to", ext: ".jpg" }, { word: "On", ext: ".jpg" },
+            { word: "Raining", ext: ".png" }, { word: "Snowing", ext: ".png" }, { word: "Sunny", ext: ".png" },
+            { word: "Train", ext: ".jpg" }, { word: "Under", ext: ".jpg" }, { word: "Wendy", ext: ".png" },
+            { word: "With", ext: ".png" }, { word: "Without", ext: ".png" }
+        ],
+        "Time": [
+            { word: "Monday", ext: ".png" }, { word: "Tuesday", ext: ".png" }, { word: "Wednesday", ext: ".png" },
+            { word: "Thursday", ext: ".png" }, { word: "Friday", ext: ".png" }, { word: "Saturday", ext: ".png" },
+            { word: "January", ext: ".png" }, { word: "February", ext: ".png" }, { word: "March", ext: ".png" },
+            { word: "April", ext: ".png" }, { word: "May", ext: ".png" }, { word: "June", ext: ".png" },
+            { word: "July", ext: ".png" }, { word: "August", ext: ".png" }, { word: "September", ext: ".png" },
+            { word: "October", ext: ".png" }, { word: "November", ext: ".png" }, { word: "December", ext: ".png" },
+            { word: "Today", ext: ".png" }, { word: "Tomorrow", ext: ".png" }, { word: "Yesterday", ext: ".png" }
+        ],
+        "Verbs": [
+            { word: "Have", ext: ".png" }, { word: "Do", ext: ".png" }, { word: "Know", ext: ".png" },
+            { word: "Go", ext: ".png" }, { word: "Say", ext: ".png" }, { word: "Think", ext: ".png" },
+            { word: "See", ext: ".png" }, { word: "Want", ext: ".png" }, { word: "Take", ext: ".png" },
+            { word: "Look", ext: ".png" }, { word: "Use", ext: ".png" }, { word: "Come", ext: ".png" },
+            { word: "Need", ext: ".png" }, { word: "Mean", ext: ".png" }, { word: "Give", ext: ".png" },
+            { word: "Start", ext: ".png" }, { word: "Try", ext: ".png" }, { word: "Work", ext: ".png" },
+            { word: "Tell", ext: ".png" }, { word: "Wake up", ext: ".png" }, { word: "Sleep", ext: ".png" },
+            { word: "Buy", ext: ".png" }, { word: "Write", ext: ".png" }, { word: "Play", ext: ".png" },
+            { word: "Drink", ext: ".png" }, { word: "Eat", ext: ".png" }, { word: "Speak", ext: ".png" },
+            { word: "Put", ext: ".png" }, { word: "Add", ext: ".png" }, { word: "Travel", ext: ".png" },
+            { word: "Arrive", ext: ".png" }, { word: "Enter", ext: ".png" }, { word: "Walk", ext: ".png" },
+            { word: "Run", ext: ".png" }, { word: "Stand up", ext: ".png" }, { word: "Sit down", ext: ".png" },
+            { word: "Hear", ext: ".png" }, { word: "Listen", ext: ".png" }, { word: "Help", ext: ".png" },
+            { word: "Search", ext: ".png" }, { word: "Find", ext: ".png" }, { word: "Read", ext: ".png" },
+            { word: "Can", ext: ".png" }, { word: "Understand", ext: ".png" }, { word: "Open", ext: ".png" },
+            { word: "Close", ext: ".png" }, { word: "Remember", ext: ".png" }, { word: "Wait", ext: ".png" }
+        ]
+    };
+
+    // --- PROGRESS MANAGEMENT UTILITIES ---
+
+    function getThemeProgress() {
+        try {
+            // Using placeholder for Firestore setup when running in local development context
+            const progress = JSON.parse(localStorage.getItem(PROGRESS_KEY));
+            const actualProgress = progress || {};
+
+            // --- TEMPORARY OVERRIDE FOR DEMO/TEST (START) ---
+            // 'Body' should be at Level 2 (L1 solved, ready for L2)
+            actualProgress["Body"] = 2; 
+            // 'Family' should be at Level 3 (L2 solved, ready for L3)
+            actualProgress["Family"] = 3; 
+            // --- TEMPORARY OVERRIDE FOR DEMO/TEST (END) ---
+
+            return actualProgress;
+        } catch (e) {
+            console.error("Error loading progress from localStorage", e);
+            return {};
+        }
+    }
+
+    function setThemeLevel(theme, level) {
+        const progress = getThemeProgress();
+        progress[theme] = level;
+        localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+    }
+
+    // --- GAME STATE ---
+    const App = {
+        state: {
+            currentScreen: 'HOME',
+            score: 0.0,
+            themeScore: 0.0, // Score accumulated in the current theme/level session
+            currentCategory: null,
+            currentLevel: 1,
+            currentWord: null, 
+            categoryWordsQueue: [],
+            currentQuestionWords: [],
+            isAwaitingAnswer: false,
+            audioCache: {}, 
+            currentQuestionNumber: 0,
+            totalQuestions: 0,
+        },
+        
+        // --- DOM REFERENCES ---
+        dom: {
+            scoreDisplay: document.getElementById('score'),
+            homeScreen: document.getElementById('home-screen'),
+            level1Screen: document.getElementById('level1-screen'),
+            level2Screen: document.getElementById('level2-screen'),
+            level3Screen: document.getElementById('level3-screen'), // NEW REF
+            levelCompleteScreen: document.getElementById('level-complete-screen'),
+            categoryList: document.getElementById('category-list'),
+            backToHomeBtn: document.getElementById('back-to-home-btn'),
+            
+            // Level 1 Refs
+            currentThemeTitle1: document.getElementById('current-theme-title-1'),
+            ttsBtn1: document.getElementById('tts-btn-1'),
+            ttsIcon1: document.getElementById('tts-icon-1'),
+            imageOptionsContainer: document.getElementById('image-options-container'),
+            feedbackText1: document.getElementById('feedback-text-1'),
+            nextLevel1Btn: document.getElementById('next-level1-btn'),
+            currentQuestionCount1: document.getElementById('current-question-count-1'),
+            totalQuestionCount1: document.getElementById('total-question-count-1'),
+
+            // Level 2 Refs
+            currentThemeTitle2: document.getElementById('current-theme-title-2'),
+            targetImage2: document.getElementById('target-image-2'),
+            audioOptionsContainer: document.getElementById('audio-options-container'),
+            feedbackText2: document.getElementById('feedback-text-2'),
+            nextLevel2Btn: document.getElementById('next-level2-btn'),
+            currentQuestionCount2: document.getElementById('current-question-count-2'),
+            totalQuestionCount2: document.getElementById('total-question-count-2'),
+            level2PlayBtns: null, // Initialized in init
+            level2SelectBtns: null, // Initialized in init
+            
+            // Level 3 Refs (NEW)
+            currentThemeTitle3: document.getElementById('current-theme-title-3'),
+            targetImage3: document.getElementById('target-image-3'),
+            micBtn3: document.getElementById('mic-btn-3'),
+            ttsHintBtn3: document.getElementById('tts-hint-btn-3'), // NEW HINT BUTTON
+            micIcon3: document.getElementById('mic-icon-3'),
+            recognitionStatus: document.getElementById('recognition-status'),
+            feedbackText3: document.getElementById('feedback-text-3'),
+            nextLevel3Btn: document.getElementById('next-level3-btn'),
+            currentQuestionCount3: document.getElementById('current-question-count-3'),
+            totalQuestionCount3: document.getElementById('total-question-count-3'),
+            
+            // Completion Refs
+            completedTheme: document.getElementById('completed-theme'),
+            themeScoreDisplay: document.getElementById('theme-score'),
+            nextLevelMessage: document.getElementById('next-level-message'),
+        },
+
+        // --- CORE GAME LOGIC ---
+
+        init() {
+            // Initialize Level 2 button lists (Play and Select)
+            this.dom.level2PlayBtns = this.dom.audioOptionsContainer.querySelectorAll('.level2-play-btn');
+            this.dom.level2SelectBtns = this.dom.audioOptionsContainer.querySelectorAll('.level2-select-btn');
+            
+            this.dom.backToHomeBtn.addEventListener('click', () => this.showHomeScreen());
+            
+            // Set up Speech Recognition listeners
+            if (recognition) {
+                recognition.onresult = this.handleRecognitionResult.bind(this);
+                recognition.onend = this.handleRecognitionEnd.bind(this);
+                recognition.onerror = this.handleRecognitionError.bind(this);
+            }
+
+            this.dom.micBtn3.onclick = () => this.startSpeechRecognition();
+            // L3 Hint Button Handler (NEW)
+            this.dom.ttsHintBtn3.onclick = () => {
+                if (App.state.currentWord && App.state.currentWord.word) {
+                    App.speakWord(App.state.currentWord.word);
+                }
+            };
+
+
+            this.showHomeScreen();
+        },
+
+        updateScreen() {
+            this.dom.homeScreen.classList.add('hidden');
+            this.dom.level1Screen.classList.add('hidden');
+            this.dom.level2Screen.classList.add('hidden');
+            this.dom.level3Screen.classList.add('hidden'); // NEW
+            this.dom.levelCompleteScreen.classList.add('hidden');
+            this.dom.backToHomeBtn.classList.remove('hidden');
+            
+            switch (this.state.currentScreen) {
+                case 'HOME':
+                    this.dom.homeScreen.classList.remove('hidden');
+                    this.dom.backToHomeBtn.classList.add('hidden');
+                    break;
+                case 'LEVEL1':
+                    this.dom.level1Screen.classList.remove('hidden');
+                    break;
+                case 'LEVEL2':
+                    this.dom.level2Screen.classList.remove('hidden');
+                    break;
+                case 'LEVEL3': // NEW
+                    this.dom.level3Screen.classList.remove('hidden');
+                    break;
+                case 'LEVEL_COMPLETE':
+                    this.dom.levelCompleteScreen.classList.remove('hidden');
+                    break;
+            }
+            this.dom.scoreDisplay.textContent = this.state.score.toFixed(1);
+        },
+
+        showHomeScreen() {
+            this.state.currentScreen = 'HOME';
+            this.updateScreen();
+
+            const categories = Object.keys(WORD_DATA_DETAILS);
+            this.dom.categoryList.innerHTML = '';
+            const progress = getThemeProgress();
+
+            categories.forEach(category => {
+                const currentLevel = progress[category] || 1; // 1: L1 active, 2: L2 active, 3: Mastered
+                const wordCount = WORD_DATA_DETAILS[category].length; // Get unique word count
+
+                let buttonClass = 'game-button';
+                
+                if (currentLevel >= 3) {
+                    // Level 3 Unlocked/Mastered: Green style
+                    buttonClass += ' mastered';
+                } else if (currentLevel >= 2) {
+                    // Level 2 Unlocked: Dark blue style
+                    buttonClass += ' unlocked';
+                } else {
+                    // Level 1 Active: Light blue style
+                    buttonClass += ' default';
+                }
+                
+                const btn = document.createElement('button');
+                // Update button text format: ThemeName (WordCount)
+                btn.textContent = `${category} (${wordCount})`; 
+                btn.className = buttonClass;
+                btn.onclick = () => this.startLevel(category, currentLevel);
+                this.dom.categoryList.appendChild(btn);
+            });
+        },
+        
+        startLevel(category, currentLevel) {
+            this.state.currentCategory = category;
+            this.state.themeScore = 0.0;
+            this.state.currentLevel = currentLevel;
+
+            if (currentLevel === 1) {
+                this.startLevel1(category);
+            } else if (currentLevel === 2) {
+                this.startLevel2(category);
+            } else {
+                this.startLevel3(category);
+            }
+        },
+        
+        // --- Enabling Logic ---
+
+        enableElementByWord(word) {
+            if (this.state.currentScreen === 'LEVEL1') {
+                const element = this.dom.imageOptionsContainer.querySelector(`[data-word="${word}"]`);
+                if (element) {
+                    element.classList.remove('loading-audio');
+                }
+            } else if (this.state.currentScreen === 'LEVEL2') {
+                const playButton = this.dom.audioOptionsContainer.querySelector(`.level2-play-btn[data-word="${word}"]`);
+                const selectButton = this.dom.audioOptionsContainer.querySelector(`.level2-select-btn[data-word="${word}"]`);
+                
+                if (playButton) {
+                    playButton.classList.remove('loading-audio');
+                    playButton.disabled = false;
+                }
+                if (selectButton) {
+                    selectButton.classList.remove('loading-audio');
+                    selectButton.disabled = false;
+                }
+            }
+        },
+
+        // --- LEVEL 1 (Audio to Image) LOGIC ---
+        startLevel1(category) {
+            this.state.currentScreen = 'LEVEL1';
+            
+            const initialWords = WORD_DATA_DETAILS[category];
+            this.state.categoryWordsQueue = [...initialWords, ...initialWords].sort(() => Math.random() - 0.5); 
+            
+            this.state.totalQuestions = this.state.categoryWordsQueue.length;
+            this.state.currentQuestionNumber = 0;
+
+            this.dom.currentThemeTitle1.textContent = `Theme: ${category} - Level 1`;
+            this.dom.nextLevel1Btn.classList.add('hidden');
+            this.dom.feedbackText1.textContent = '';
+            this.dom.ttsBtn1.onclick = () => App.speakWord(App.state.currentWord.word); // Ensure repeated clicks work
+            
+            this.updateScreen();
+            this.loadNextLevel1Question();
+        },
+
+        loadNextLevel1Question() {
+            if (this.state.categoryWordsQueue.length === 0) {
+                this.finishLevel1();
+                return;
+            }
+
+            this.state.currentQuestionNumber++;
+            this.dom.currentQuestionCount1.textContent = this.state.currentQuestionNumber;
+            this.dom.totalQuestionCount1.textContent = this.state.totalQuestions;
+
+            this.state.isAwaitingAnswer = true;
+            this.dom.nextLevel1Btn.classList.add('hidden');
+            this.dom.feedbackText1.textContent = '';
+            this.dom.feedbackText1.className = 'text-lg font-bold';
+            
+            const correctWordObject = this.state.categoryWordsQueue.pop();
+            this.state.currentWord = correctWordObject;
+
+            const categoryWordObjects = WORD_DATA_DETAILS[this.state.currentCategory];
+            const distractors = this.getRandomWordObjects(categoryWordObjects, correctWordObject, 2);
+
+            this.state.currentQuestionWords = [correctWordObject, ...distractors].sort(() => Math.random() - 0.5);
+            
+            this.renderLevel1ImageOptions();
+            
+            // 1. Put main button in loading state immediately
+            this.dom.ttsBtn1.disabled = true;
+            this.dom.ttsIcon1.classList.add('spinner');
+            this.dom.ttsIcon1.innerHTML = '';
+            
+            // 2. Initiate Fetch and Enable on Ready for all words
+            this.state.currentQuestionWords.forEach(wordObj => {
+                this.fetchAndCacheAudio(wordObj.word, (readyWord) => {
+                    this.enableElementByWord(readyWord);
+                    
+                    // 3. Auto-play the correct word the instant its audio file is ready
+                    if (readyWord === this.state.currentWord.word) {
+                        this.speakWord(readyWord, true); // Pass true to signal it's the auto-play event
+                    }
+                });
+            });
+        },
+
+        renderLevel1ImageOptions() {
+            this.dom.imageOptionsContainer.innerHTML = '';
+
+            this.state.currentQuestionWords.forEach(wordObject => {
+                const imageUrl = this.getWordImageUrl(this.state.currentCategory, wordObject);
+                
+                const img = document.createElement('img');
+                img.className = 'image-option loading-audio'; // ADD loading class initially
+                img.src = imageUrl;
+                img.setAttribute('data-word', wordObject.word); 
+                img.alt = `Image for ${wordObject.word}`;
+                img.onerror = () => { img.src = this.getPlaceholderUrl(); };
+                
+                img.onclick = (e) => {
+                    // Always allow continuous audio playback
+                    App.speakWord(e.target.getAttribute('data-word')); 
+                    
+                    if (!App.state.isAwaitingAnswer) return; 
+
+                    const selectedWord = e.target.getAttribute('data-word');
+                    App.checkLevel1Answer(selectedWord, img);
+                };
+                
+                this.dom.imageOptionsContainer.appendChild(img);
+            });
+        },
+
+        checkLevel1Answer(selectedWord, selectedImage) {
+            if (!this.state.isAwaitingAnswer) return;
+
+            const isCorrect = selectedWord === this.state.currentWord.word;
+            
+            selectedImage.classList.remove('incorrect', 'correct');
+
+            if (isCorrect) {
+                this.state.isAwaitingAnswer = false; 
+                selectedImage.classList.add('correct');
+                
+                this.state.score += 0.5;
+                this.state.themeScore += 0.5;
+                this.dom.scoreDisplay.textContent = this.state.score.toFixed(1);
+                
+                this.dom.feedbackText1.textContent = `Correct!`;
+                this.dom.feedbackText1.className = 'text-lg font-bold text-green-600';
+                
+                this.dom.nextLevel1Btn.classList.remove('hidden');
+
+            } else {
+                selectedImage.classList.add('incorrect');
+                
+                this.dom.feedbackText1.textContent = `Wrong. Try again!`;
+                this.dom.feedbackText1.className = 'text-lg font-bold text-red-600';
+            }
+        },
+        
+        finishLevel1() {
+            setThemeLevel(this.state.currentCategory, 2); // Unlock Level 2
+            
+            this.state.currentScreen = 'LEVEL_COMPLETE';
+            this.dom.completedTheme.textContent = `${this.state.currentCategory} - Level 1`;
+            this.dom.themeScoreDisplay.textContent = this.state.themeScore.toFixed(1);
+            this.dom.nextLevelMessage.textContent = `Level 2 has been unlocked for ${this.state.currentCategory}!`;
+            this.updateScreen();
+        },
+
+        // --- LEVEL 2 (Image to Audio) LOGIC ---
+        startLevel2(category) {
+            this.state.currentScreen = 'LEVEL2';
+            
+            const initialWords = WORD_DATA_DETAILS[category];
+            this.state.categoryWordsQueue = [...initialWords, ...initialWords].sort(() => Math.random() - 0.5); 
+            
+            this.state.totalQuestions = this.state.categoryWordsQueue.length;
+            this.state.currentQuestionNumber = 0;
+
+            this.dom.currentThemeTitle2.textContent = `Theme: ${category} - Level 2`;
+            this.dom.nextLevel2Btn.classList.add('hidden');
+            this.dom.feedbackText2.textContent = '';
+
+            this.updateScreen();
+            this.loadNextLevel2Question();
+        },
+
+        loadNextLevel2Question() {
+            if (this.state.categoryWordsQueue.length === 0) {
+                this.finishLevel2();
+                return;
+            }
+
+            this.state.currentQuestionNumber++;
+            this.dom.currentQuestionCount2.textContent = this.state.currentQuestionNumber;
+            this.dom.totalQuestionCount2.textContent = this.state.totalQuestions;
+
+            this.state.isAwaitingAnswer = true;
+            this.dom.nextLevel2Btn.classList.add('hidden');
+            this.dom.feedbackText2.textContent = '';
+            this.dom.feedbackText2.className = 'text-lg font-bold';
+            
+            const targetWordObject = this.state.categoryWordsQueue.pop();
+            this.state.currentWord = targetWordObject; 
+
+            const categoryWordObjects = WORD_DATA_DETAILS[this.state.currentCategory];
+            const distractors = this.getRandomWordObjects(categoryWordObjects, targetWordObject, 2);
+
+            this.state.currentQuestionWords = [targetWordObject, ...distractors].sort(() => Math.random() - 0.5);
+            
+            this.renderLevel2UI(targetWordObject);
+            
+            // Preload audio for all options
+            this.state.currentQuestionWords.forEach(wordObj => {
+                this.fetchAndCacheAudio(wordObj.word, (readyWord) => {
+                    this.enableElementByWord(readyWord);
+                });
+            });
+        },
+
+        renderLevel2UI(targetWordObject) {
+            // Set the target image
+            const imageUrl = this.getWordImageUrl(this.state.currentCategory, targetWordObject);
+            this.dom.targetImage2.src = imageUrl;
+            this.dom.targetImage2.onerror = () => { this.dom.targetImage2.src = this.getPlaceholderUrl(); };
+            
+            // Set the audio and select buttons
+            this.dom.level2SelectBtns.forEach((selectBtn, index) => {
+                const playBtn = this.dom.level2PlayBtns[index];
+                const wordObject = this.state.currentQuestionWords[index];
+                
+                // Reset button appearance AND apply loading/disabled state initially
+                selectBtn.classList.remove('correct', 'incorrect');
+                selectBtn.classList.add('loading-audio');
+                selectBtn.disabled = true;
+
+                playBtn.classList.remove('correct', 'incorrect');
+                playBtn.classList.add('loading-audio');
+                playBtn.disabled = true;
+
+                // Set data attributes
+                selectBtn.setAttribute('data-word', wordObject.word);
+                playBtn.setAttribute('data-word', wordObject.word);
+
+                // Play Button Handler (Listen)
+                playBtn.onclick = () => {
+                    App.speakWord(wordObject.word); // Always allow listening
+                };
+
+                // Select Button Handler (Check Answer)
+                selectBtn.onclick = () => {
+                    if (!App.state.isAwaitingAnswer) {
+                        // Allow continuous audio playback after correct answer
+                        App.speakWord(wordObject.word); 
+                        return;
+                    }
+                    // Play audio one last time and check
+                    App.speakWord(wordObject.word); 
+                    App.checkLevel2Answer(wordObject.word, selectBtn);
+                };
+            });
+        },
+
+        checkLevel2Answer(selectedWord, selectedButton) {
+            if (!this.state.isAwaitingAnswer) return;
+
+            const isCorrect = selectedWord === this.state.currentWord.word;
+            
+            selectedButton.classList.remove('incorrect', 'correct');
+
+            if (isCorrect) {
+                this.state.isAwaitingAnswer = false; 
+                selectedButton.classList.add('correct');
+                
+                // DO NOT disable clicks here - allows continuous audio playback
+                
+                this.state.score += 0.5;
+                this.state.themeScore += 0.5;
+                this.dom.scoreDisplay.textContent = this.state.score.toFixed(1);
+                
+                this.dom.feedbackText2.textContent = `Correct!`;
+                this.dom.feedbackText2.className = 'text-lg font-bold text-green-600';
+                
+                this.dom.nextLevel2Btn.classList.remove('hidden');
+
+            } else {
+                selectedButton.classList.add('incorrect');
+                
+                this.dom.feedbackText2.textContent = `Wrong. Try again!`;
+                this.dom.feedbackText2.className = 'text-lg font-bold text-red-600';
+            }
+        },
+
+        finishLevel2() {
+            setThemeLevel(this.state.currentCategory, 3); // Unlock Level 3
+
+            this.state.currentScreen = 'LEVEL_COMPLETE';
+            this.dom.completedTheme.textContent = `${this.state.currentCategory} - Level 2`;
+            this.dom.themeScoreDisplay.textContent = this.state.themeScore.toFixed(1);
+            this.dom.nextLevelMessage.textContent = `Level 3 (Pronunciation Test) has been unlocked for ${this.state.currentCategory}!`;
+            this.updateScreen();
+        },
+
+        // --- LEVEL 3 (Speech Recognition) LOGIC (NEW) ---
+        startLevel3(category) {
+            if (!recognition) {
+                // Check if the browser supports Speech Recognition
+                alert("Speech Recognition is not supported in this browser. Please try Chrome or Edge.");
+                this.showHomeScreen();
+                return;
+            }
+
+            this.state.currentScreen = 'LEVEL3';
+            
+            const initialWords = WORD_DATA_DETAILS[category];
+            this.state.categoryWordsQueue = [...initialWords, ...initialWords].sort(() => Math.random() - 0.5); 
+            
+            this.state.totalQuestions = this.state.categoryWordsQueue.length;
+            this.state.currentQuestionNumber = 0;
+
+            this.dom.currentThemeTitle3.textContent = `Theme: ${category} - Level 3`;
+            this.dom.nextLevel3Btn.classList.add('hidden');
+            this.dom.feedbackText3.textContent = '';
+            this.dom.micBtn3.classList.remove('recording');
+            this.dom.micBtn3.disabled = false;
+            this.dom.ttsHintBtn3.disabled = false;
+            this.dom.recognitionStatus.textContent = 'Tap the microphone to speak.';
+
+            this.updateScreen();
+            this.loadNextLevel3Question();
+        },
+        
+        loadNextLevel3Question() {
+            if (this.state.categoryWordsQueue.length === 0) {
+                this.finishLevel3();
+                return;
+            }
+
+            this.state.currentQuestionNumber++;
+            this.dom.currentQuestionCount3.textContent = this.state.currentQuestionNumber;
+            this.dom.totalQuestionCount3.textContent = this.state.totalQuestions;
+
+            this.state.isAwaitingAnswer = true;
+            this.dom.nextLevel3Btn.classList.add('hidden');
+            this.dom.feedbackText3.textContent = '';
+            this.dom.feedbackText3.className = 'text-lg font-bold';
+            
+            const targetWordObject = this.state.categoryWordsQueue.pop();
+            this.state.currentWord = targetWordObject; 
+
+            // Preload the audio hint for the current word (L3)
+            // L3 HINT FIX: Disable button before fetch, re-enable on success.
+            this.dom.ttsHintBtn3.disabled = true;
+            this.fetchAndCacheAudio(targetWordObject.word, (readyWord) => {
+                if (readyWord === targetWordObject.word) {
+                    this.dom.ttsHintBtn3.disabled = false;
+                }
+            });
+
+            // Set the target image
+            const imageUrl = this.getWordImageUrl(this.state.currentCategory, targetWordObject);
+            this.dom.targetImage3.src = imageUrl;
+            this.dom.targetImage3.onerror = () => { this.dom.targetImage3.src = this.getPlaceholderUrl(); };
+
+            this.dom.micBtn3.disabled = false;
+            this.dom.recognitionStatus.textContent = 'Pronounce the word you see.';
+        },
+        
+        startSpeechRecognition() {
+            if (!this.state.isAwaitingAnswer || !recognition) return;
+
+            // Set the grammar to only recognize words from the current theme (optimization)
+            const grammar = this.getThemeWordsForGrammar(this.state.currentCategory);
+            
+            // Start listening
+            try {
+                recognition.start();
+                this.dom.micBtn3.classList.add('recording');
+                this.dom.recognitionStatus.textContent = 'Listening... Speak Now!';
+                this.dom.micBtn3.disabled = true; // Disable clicking during active listening
+                this.dom.ttsHintBtn3.disabled = true; // Disable hint during listening
+            } catch (e) {
+                console.error("Speech Recognition start failed:", e);
+                // Ignore DOMException errors related to recognition already being active
+                if (e.name !== 'abort') {
+                   this.dom.recognitionStatus.textContent = 'Error: Microphone failed to start.';
+                }
+            }
+        },
+
+        handleRecognitionResult(event) {
+            const recognizedText = event.results[0][0].transcript.trim().toLowerCase();
+            const targetWord = this.state.currentWord.word.toLowerCase();
+            
+            this.dom.micBtn3.classList.remove('recording');
+
+            if (!this.state.isAwaitingAnswer) return;
+            
+            if (recognizedText === targetWord) {
+                this.dom.feedbackText3.textContent = `Success! You pronounced "${recognizedText}".`;
+                this.dom.feedbackText3.className = 'text-lg font-bold text-green-600';
+                this.dom.recognitionStatus.textContent = 'Perfect Pronunciation!';
+                
+                this.state.isAwaitingAnswer = false;
+                this.state.score += 0.5;
+                this.state.themeScore += 0.5;
+                this.dom.scoreDisplay.textContent = this.state.score.toFixed(1);
+                
+                this.dom.nextLevel3Btn.classList.remove('hidden');
+            } else {
+                this.dom.feedbackText3.textContent = `Try Again. Recognized: "${recognizedText}".`;
+                this.dom.feedbackText3.className = 'text-lg font-bold text-red-600';
+                this.dom.recognitionStatus.textContent = 'Tap to try again.';
+                this.dom.micBtn3.disabled = false;
+                this.dom.ttsHintBtn3.disabled = false; // Re-enable hint button on failed guess
+            }
+        },
+
+        handleRecognitionEnd() {
+            if (this.state.isAwaitingAnswer) {
+                this.dom.micBtn3.classList.remove('recording');
+                this.dom.micBtn3.disabled = false;
+                this.dom.ttsHintBtn3.disabled = false; // Re-enable hint button
+            }
+        },
+        
+        handleRecognitionError(event) {
+            console.error("Recognition Error:", event.error);
+            this.dom.micBtn3.classList.remove('recording');
+            if (this.state.isAwaitingAnswer) {
+                 this.dom.micBtn3.disabled = false;
+                 this.dom.ttsHintBtn3.disabled = false; // Re-enable hint button
+                 if (event.error === 'not-allowed') {
+                     this.dom.recognitionStatus.textContent = 'Microphone permission denied. Please allow access.';
+                 } else {
+                     this.dom.recognitionStatus.textContent = 'No speech detected or error occurred. Tap to try again.';
+                 }
+                 
+            }
+        },
+
+        getThemeWordsForGrammar(category) {
+            return WORD_DATA_DETAILS[category].map(obj => obj.word).join(', ');
+        },
+
+        finishLevel3() {
+            setThemeLevel(this.state.currentCategory, 4); // Mark theme as fully Mastered
+
+            this.state.currentScreen = 'LEVEL_COMPLETE';
+            this.dom.completedTheme.textContent = `${this.state.currentCategory} - Level 3 (Pronunciation)`;
+            this.dom.themeScoreDisplay.textContent = this.state.themeScore.toFixed(1);
+            this.dom.nextLevelMessage.textContent = `Congratulations! You have mastered the ${this.state.currentCategory} theme!`;
+            this.updateScreen();
+        },
+
+        // --- UTILITIES (Unchanged) ---
+
+        getWordImageUrl(category, wordObject) {
+            const filename = `${category}_${wordObject.word.replace(/ /g, '_')}`;
+            return `${BASE_IMAGE_URL}${filename}${wordObject.ext}`;
+        },
+        
+        getPlaceholderUrl() {
+            return `https://placehold.co/150x150/bdbdff/4f46e5?text=IMAGE%20ERROR`;
+        },
+
+        getRandomWordObjects(wordList, excludeWordObject, count) {
+            const available = wordList.filter(w => w.word !== excludeWordObject.word);
+            if (available.length < count) return available; 
+            
+            const selected = [];
+            const shuffled = [...available].sort(() => 0.5 - Math.random());
+            
+            for (let i = 0; i < count; i++) {
+                selected.push(shuffled[i]);
+            }
+            return selected;
+        },
+        
+        // --- TTS CACHING & PLAYBACK FUNCTIONS (Unchanged from optimized version) ---
+
+        async fetchAndCacheAudio(textToSpeak, onCompleteCallback) {
+            const cacheKey = textToSpeak;
+            const text = `Say clearly: ${textToSpeak}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: text }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: { prebuiltVoiceConfig: { voiceName: TTS_VOICE } }
+                    }
+                }
+            };
+
+            for (let i = 0; i < MAX_RETRIES; i++) {
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                    const result = await response.json();
+                    const part = result?.candidates?.[0]?.content?.parts?.[0];
+                    const audioData = part?.inlineData?.data;
+                    const mimeType = part?.inlineData?.mimeType;
+
+                    if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
+                        const rateMatch = mimeType.match(/rate=(\d+)/);
+                        const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 16000;
+                        const pcmData = this.base64ToArrayBuffer(audioData);
+                        const pcm16 = new Int16Array(pcmData);
+                        const wavBlob = this.pcmToWav(pcm16, sampleRate);
+                        
+                        App.state.audioCache[cacheKey] = wavBlob; 
+                        onCompleteCallback(textToSpeak); // Signal successful cache
+                        return;
+                    }
+
+                } catch (error) {
+                    console.error(`Preload attempt ${i + 1} failed for ${textToSpeak}:`, error);
+                }
+                const delay = Math.pow(2, i) * 1000; 
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        },
+
+        async speakWord(textToSpeak, isAutoPlay = false) {
+            if (!textToSpeak) return;
+
+            const cachedBlob = App.state.audioCache[textToSpeak];
+            if (cachedBlob) {
+                this.playAudioBlob(cachedBlob);
+                
+                if (isAutoPlay) {
+                     this.dom.ttsIcon1.classList.remove('spinner');
+                     this.dom.ttsIcon1.innerHTML = '<i class="fas fa-volume-up"></i>';
+                     this.dom.ttsBtn1.disabled = false;
+                }
+                return; // INSTANT PLAYBACK
+            }
+            
+            // --- Fallback if uncached (Only runs if caching failed) ---
+            
+            const isMainTTSButton = this.state.currentScreen === 'LEVEL1' && textToSpeak === App.state.currentWord.word;
+
+            const originalIconHTML = this.dom.ttsIcon1.innerHTML; 
+            const btn = this.dom.ttsBtn1;
+
+            if (isMainTTSButton) {
+                btn.disabled = true;
+                this.dom.ttsIcon1.classList.add('spinner');
+                this.dom.ttsIcon1.innerHTML = '';
+            }
+            
+            // Attempt to fetch and cache again
+            await this.fetchAndCacheAudio(textToSpeak, () => {}); 
+            
+            const finalBlob = App.state.audioCache[textToSpeak];
+            if (finalBlob) {
+                this.playAudioBlob(finalBlob);
+            } else {
+                 const feedbackTarget = this.state.currentScreen === 'LEVEL1' ? this.dom.feedbackText1 : this.dom.feedbackText2;
+                 feedbackTarget.textContent = 'Audio load error.';
+                 feedbackTarget.className = 'text-lg font-bold text-red-600';
+            }
+
+            if (isMainTTSButton) {
+                this.dom.ttsIcon1.classList.remove('spinner');
+                this.dom.ttsIcon1.innerHTML = originalIconHTML; 
+                btn.disabled = false;
+            }
+        },
+        
+        // --- AUDIO UTILITY IMPLEMENTATIONS (Unchanged) ---
+        
+        base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) { bytes[i] = binaryString.charCodeAt(i); }
+            return bytes.buffer;
+        },
+
+        pcmToWav(pcm16, sampleRate) {
+            const numChannels = 1;
+            const bitsPerSample = 16;
+            const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
+            const blockAlign = numChannels * (bitsPerSample / 8);
+            const dataLength = pcm16.length * 2; 
+            const buffer = new ArrayBuffer(44 + dataLength);
+            const view = new DataView(buffer);
+
+            const writeString = (view, offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+
+            // RIFF chunk
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataLength, true); 
+            writeString(view, 8, 'WAVE');
+
+            // FMT sub-chunk
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true); 
+            view.setUint16(20, 1, true); 
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, bitsPerSample, true);
+
+            // DATA sub-chunk
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataLength, true); 
+
+            // Write PCM data
+            let offset = 44;
+            for (let i = 0; i < pcm16.length; i++) {
+                view.setInt16(offset, pcm16[i], true);
+                offset += 2;
+            }
+            return new Blob([view], { type: 'audio/wav' });
+        },
+
+        playAudioBlob(wavBlob) {
+            const audioUrl = URL.createObjectURL(wavBlob);
+            const audio = new Audio(audioUrl);
+            audio.volume = 1.0; 
+            audio.play().catch(e => console.error("Audio playback failed:", e));
+            audio.onended = () => { URL.revokeObjectURL(audioUrl); };
+        }
+    };
+
+    // Start the application
+    window.onload = () => App.init();
+</script>
+</body>
+</html>
