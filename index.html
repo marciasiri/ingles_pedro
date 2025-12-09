@@ -240,7 +240,7 @@
 
         <!-- 2. LEVEL 1 QUIZ SCREEN (Audio to Image) -->
         <div id="level1-screen" class="hidden text-center p-4">
-            <h2 id="current-theme-title-1" class="text-2xl font-bold mb-6">Theme: Loading...</h2>
+            <h2 id="current-theme-title-1" class="2xl font-bold mb-6">Theme: Loading...</h2>
 
             <p class="text-lg font-semibold text-gray-600 mb-6">
                 Question <span id="current-question-count-1">0</span> / <span id="total-question-count-1">0</span>
@@ -369,7 +369,7 @@
 <script>
     // --- TTS API CONFIG ---
     const API_MODEL = "gemini-2.5-flash-preview-tts";
-    const API_KEY = ""; 
+    const API_KEY = "AIzaSyAYjReoqAvK8xCYx1dbNIP9mmgG6P4AIn8"; 
     const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent?key=${API_KEY}`;
     const TTS_VOICE = "Kore"; 
     const MAX_RETRIES = 5;
