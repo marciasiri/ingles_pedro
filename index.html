@@ -48,8 +48,8 @@
             text-transform: uppercase;
         }
 
-        /* Level 1 (Default/Not complete): Light Blue */
-        .game-button.default {
+        /* Level 1 (Default/Not complete): Light Blue Button & Title */
+        .game-button.default, #current-theme-title-1 {
             background-color: #38bdf8; /* Sky-400 (Light Blue) */
             color: white;
             box-shadow: 0 4px #0284c7; /* Sky-700 */
@@ -57,8 +57,8 @@
         .game-button.default:hover { background-color: #0ea5e9; } /* Sky-500 */
         .game-button.default:active { box-shadow: 0 0 #0284c7; transform: translateY(4px); }
 
-        /* Level 2 (Unlocked/Complete Level 1): Dark Blue */
-        .game-button.unlocked {
+        /* Level 2 (Unlocked/Complete Level 1): Dark Blue Button & Title */
+        .game-button.unlocked, #current-theme-title-2 {
             background-color: #1e3a8a; /* Blue-900 (Dark Blue) */
             color: white;
             box-shadow: 0 4px #1e3a8a; /* Blue-900 */
@@ -66,8 +66,8 @@
         .game-button.unlocked:hover { background-color: #172554; } /* Blue-950 */
         .game-button.unlocked:active { box-shadow: 0 0 #1e3a8a; transform: translateY(4px); }
 
-        /* Level 3 (Mastered): Green */
-        .game-button.mastered {
+        /* Level 3 (Mastered): Green Button & Title */
+        .game-button.mastered, #current-theme-title-3 {
             background-color: #059669; /* Emerald-600 */
             color: white;
             box-shadow: 0 4px #047857; /* Emerald-700 */
@@ -186,6 +186,17 @@
             background-color: #4f46e5; /* Indigo */
             box-shadow: 0 6px #3730a3;
         }
+        
+        /* Apply level colors to titles */
+        #current-theme-title-1 {
+            color: #0284c7; /* Sky-700 */
+        }
+        #current-theme-title-2 {
+            color: #172554; /* Blue-950 */
+        }
+        #current-theme-title-3 {
+            color: #047857; /* Emerald-700 */
+        }
 
 
         /* Spinner CSS for loading state */
@@ -229,7 +240,7 @@
 
         <!-- 2. LEVEL 1 QUIZ SCREEN (Audio to Image) -->
         <div id="level1-screen" class="hidden text-center p-4">
-            <h2 id="current-theme-title-1" class="text-2xl font-bold text-blue-600 mb-6">Theme: Loading...</h2>
+            <h2 id="current-theme-title-1" class="text-2xl font-bold mb-6">Theme: Loading...</h2>
 
             <p class="text-lg font-semibold text-gray-600 mb-6">
                 Question <span id="current-question-count-1">0</span> / <span id="total-question-count-1">0</span>
@@ -251,13 +262,16 @@
             <!-- Feedback and Next Button -->
             <div id="feedback-area-1" class="mt-6 min-h-12">
                 <p id="feedback-text-1" class="text-lg font-bold"></p>
-                <button id="next-level1-btn" class="game-button w-full mt-4 bg-indigo-500 hidden" onclick="App.loadNextLevel1Question()">NEXT WORD</button>
+                 <div class="flex space-x-2 mt-4">
+                    <button id="skip-level1-btn" class="game-button w-1/3 bg-red-500 hover:bg-red-600 active:bg-red-700" onclick="App.skipCurrentQuestion()">SKIP WORD</button>
+                    <button id="next-level1-btn" class="game-button w-2/3 mt-0 bg-indigo-500 hidden" onclick="App.loadNextLevel1Question()">NEXT WORD</button>
+                </div>
             </div>
         </div>
         
         <!-- 3. LEVEL 2 QUIZ SCREEN (Image to Audio) -->
         <div id="level2-screen" class="hidden text-center p-4">
-            <h2 id="current-theme-title-2" class="text-2xl font-bold text-green-600 mb-6">Theme: Loading...</h2>
+            <h2 id="current-theme-title-2" class="text-2xl font-bold mb-6">Theme: Loading...</h2>
             
             <p class="text-lg font-semibold text-gray-600 mb-6">
                 Question <span id="current-question-count-2">0</span> / <span id="total-question-count-2">0</span>
@@ -292,13 +306,16 @@
             <!-- Feedback and Next Button -->
             <div id="feedback-area-2" class="mt-6 min-h-12">
                 <p id="feedback-text-2" class="text-lg font-bold"></p>
-                <button id="next-level2-btn" class="game-button w-full mt-4 bg-indigo-500 hidden" onclick="App.loadNextLevel2Question()">NEXT WORD</button>
+                <div class="flex space-x-2 mt-4">
+                    <button id="skip-level2-btn" class="game-button w-1/3 bg-red-500 hover:bg-red-600 active:bg-red-700" onclick="App.skipCurrentQuestion()">SKIP WORD</button>
+                    <button id="next-level2-btn" class="game-button w-2/3 mt-0 bg-indigo-500 hidden" onclick="App.loadNextLevel2Question()">NEXT WORD</button>
+                </div>
             </div>
         </div>
 
         <!-- 4. LEVEL 3 QUIZ SCREEN (Speech Recognition) -->
         <div id="level3-screen" class="hidden text-center p-4">
-            <h2 id="current-theme-title-3" class="text-2xl font-bold text-red-600 mb-6">Theme: Loading...</h2>
+            <h2 id="current-theme-title-3" class="text-2xl font-bold mb-6">Theme: Loading...</h2>
             
             <p class="text-lg font-semibold text-gray-600 mb-6">
                 Question <span id="current-question-count-3">0</span> / <span id="total-question-count-3">0</span>
@@ -330,7 +347,10 @@
             <!-- Feedback and Next Button -->
             <div id="feedback-area-3" class="mt-6 min-h-12">
                 <p id="feedback-text-3" class="text-lg font-bold"></p>
-                <button id="next-level3-btn" class="game-button w-full mt-4 bg-indigo-500 hidden" onclick="App.loadNextLevel3Question()">NEXT WORD</button>
+                <div class="flex space-x-2 mt-4">
+                    <button id="skip-level3-btn" class="game-button w-1/3 bg-red-500 hover:bg-red-600 active:bg-red-700" onclick="App.skipCurrentQuestion()">SKIP WORD</button>
+                    <button id="next-level3-btn" class="game-button w-2/3 mt-0 bg-indigo-500 hidden" onclick="App.loadNextLevel3Question()">NEXT WORD</button>
+                </div>
             </div>
         </div>
         
@@ -505,13 +525,6 @@
             // Using placeholder for Firestore setup when running in local development context
             const progress = JSON.parse(localStorage.getItem(PROGRESS_KEY));
             const actualProgress = progress || {};
-
-            // --- TEMPORARY OVERRIDE FOR DEMO/TEST (START) ---
-            // 'Body' should be at Level 2 (L1 solved, ready for L2)
-            actualProgress["Body"] = 2; 
-            // 'Family' should be at Level 3 (L2 solved, ready for L3)
-            actualProgress["Family"] = 3; 
-            // --- TEMPORARY OVERRIDE FOR DEMO/TEST (END) ---
 
             return actualProgress;
         } catch (e) {
@@ -697,6 +710,48 @@
                 this.startLevel3(category);
             }
         },
+
+        /**
+         * Skips the current question and loads the next one based on the current level.
+         */
+        skipCurrentQuestion() {
+            if (!this.state.isAwaitingAnswer) return; // Prevent skipping after completion
+            
+            this.state.isAwaitingAnswer = false;
+
+            const currentLevel = this.state.currentLevel;
+            const loadNextFunc = currentLevel === 1 ? this.loadNextLevel1Question.bind(this) : 
+                                 currentLevel === 2 ? this.loadNextLevel2Question.bind(this) : 
+                                 this.loadNextLevel3Question.bind(this);
+
+            // Display skip message
+            const feedbackTarget = currentLevel === 1 ? this.dom.feedbackText1 : 
+                                   currentLevel === 2 ? this.dom.feedbackText2 : 
+                                   this.dom.feedbackText3;
+            
+            feedbackTarget.textContent = `Skipped! The word was "${this.state.currentWord.word}".`;
+            feedbackTarget.className = 'text-lg font-bold text-red-600';
+
+            // Find the correct 'Next' button element to display
+            const nextBtn = currentLevel === 1 ? this.dom.nextLevel1Btn : 
+                            currentLevel === 2 ? this.dom.nextLevel2Btn : 
+                            this.dom.nextLevel3Btn;
+
+            // Hide the skip button and show the next button
+            const skipBtn = currentLevel === 1 ? document.getElementById('skip-level1-btn') :
+                            currentLevel === 2 ? document.getElementById('skip-level2-btn') :
+                            document.getElementById('skip-level3-btn');
+
+            if (skipBtn) skipBtn.classList.add('hidden');
+            if (nextBtn) nextBtn.classList.remove('hidden');
+
+            // If L1, ensure images are un-disabled for inspection (though won't matter much since NEXT is showing)
+            if (currentLevel === 1) {
+                const allImages = this.dom.imageOptionsContainer.querySelectorAll('.image-option');
+                allImages.forEach(img => img.classList.remove('loading-audio'));
+            }
+        },
+
         
         // --- Enabling Logic ---
 
@@ -752,6 +807,9 @@
 
             this.state.isAwaitingAnswer = true;
             this.dom.nextLevel1Btn.classList.add('hidden');
+            // Show skip button again
+            document.getElementById('skip-level1-btn').classList.remove('hidden');
+
             this.dom.feedbackText1.textContent = '';
             this.dom.feedbackText1.className = 'text-lg font-bold';
             
@@ -828,6 +886,7 @@
                 this.dom.feedbackText1.textContent = `Correct!`;
                 this.dom.feedbackText1.className = 'text-lg font-bold text-green-600';
                 
+                document.getElementById('skip-level1-btn').classList.add('hidden');
                 this.dom.nextLevel1Btn.classList.remove('hidden');
 
             } else {
@@ -878,6 +937,8 @@
 
             this.state.isAwaitingAnswer = true;
             this.dom.nextLevel2Btn.classList.add('hidden');
+            document.getElementById('skip-level2-btn').classList.remove('hidden');
+
             this.dom.feedbackText2.textContent = '';
             this.dom.feedbackText2.className = 'text-lg font-bold';
             
@@ -962,6 +1023,7 @@
                 this.dom.feedbackText2.textContent = `Correct!`;
                 this.dom.feedbackText2.className = 'text-lg font-bold text-green-600';
                 
+                document.getElementById('skip-level2-btn').classList.add('hidden');
                 this.dom.nextLevel2Btn.classList.remove('hidden');
 
             } else {
@@ -1023,6 +1085,8 @@
 
             this.state.isAwaitingAnswer = true;
             this.dom.nextLevel3Btn.classList.add('hidden');
+            document.getElementById('skip-level3-btn').classList.remove('hidden');
+
             this.dom.feedbackText3.textContent = '';
             this.dom.feedbackText3.className = 'text-lg font-bold';
             
@@ -1070,15 +1134,28 @@
         },
 
         handleRecognitionResult(event) {
-            const recognizedText = event.results[0][0].transcript.trim().toLowerCase();
+            let recognizedText = event.results[0][0].transcript.trim().toLowerCase();
             const targetWord = this.state.currentWord.word.toLowerCase();
             
             this.dom.micBtn3.classList.remove('recording');
 
             if (!this.state.isAwaitingAnswer) return;
             
-            if (recognizedText === targetWord) {
-                this.dom.feedbackText3.textContent = `Success! You pronounced "${recognizedText}".`;
+            // --- FIX: Robust Recognition Check (Normalization) ---
+            // 1. Normalize target word (remove hyphens and spaces)
+            const normalizedTarget = targetWord.replace(/[- ]/g, '');
+            
+            // 2. Normalize recognized text (remove hyphens and spaces)
+            const normalizedRecognized = recognizedText.replace(/[- ]/g, '');
+
+            // 3. Check for exact match OR normalized match
+            const isCorrect = (recognizedText === targetWord) || (normalizedRecognized === normalizedTarget);
+
+            if (isCorrect) {
+                // FIX: Use the original, correctly spaced/hyphenated target word for the success message
+                const displayWord = this.state.currentWord.word; 
+                
+                this.dom.feedbackText3.textContent = `Success! You pronounced "${displayWord}".`;
                 this.dom.feedbackText3.className = 'text-lg font-bold text-green-600';
                 this.dom.recognitionStatus.textContent = 'Perfect Pronunciation!';
                 
@@ -1087,6 +1164,7 @@
                 this.state.themeScore += 0.5;
                 this.dom.scoreDisplay.textContent = this.state.score.toFixed(1);
                 
+                document.getElementById('skip-level3-btn').classList.add('hidden');
                 this.dom.nextLevel3Btn.classList.remove('hidden');
             } else {
                 this.dom.feedbackText3.textContent = `Try Again. Recognized: "${recognizedText}".`;
@@ -1158,7 +1236,7 @@
             return selected;
         },
         
-        // --- TTS CACHING & PLAYBACK FUNCTIONS (Unchanged from optimized version) ---
+        // --- TTS CACHING & PLAYBACK FUNCTIONS (Optimized) ---
 
         async fetchAndCacheAudio(textToSpeak, onCompleteCallback) {
             const cacheKey = textToSpeak;
