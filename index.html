@@ -33,9 +33,16 @@
 
         .category-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-template-columns: 1fr; /* Default: 1 column for mobile */
             gap: 1rem;
             margin-top: 1.5rem;
+        }
+
+        /* Desktop/Tablet: Switch to grid only when screen is wider */
+        @media (min-width: 640px) {
+            .category-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
         }
 
         .game-button {
@@ -51,6 +58,27 @@
         .game-button:active { 
             box-shadow: 0 0; 
             transform: translateY(4px); 
+        }
+
+        /* --- STYLED NEXT BUTTON (ARROW SHAPE) --- */
+        .next-btn-styled {
+            background-color: #6366f1 !important; /* Indigo-500 */
+            color: white !important;
+            padding-right: 2rem !important;
+            padding-left: 1rem !important;
+            /* Creates a right-pointing arrow shape */
+            clip-path: polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%);
+            box-shadow: none !important; /* Shadows don't work well with clip-path */
+            border-left: 6px solid #4338ca; /* Indigo-700 for a bit of depth */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: auto !important;
+            margin: 1rem auto 0 !important;
+        }
+        .next-btn-styled:active {
+            transform: translateX(4px);
         }
 
         /* --- LEVEL BUTTON COLORS --- */
@@ -214,15 +242,11 @@
             box-shadow: 0 4px #b91c1c;
         }
 
-        /* Class for disabled state during audio loading */
-        /* Removed .loading-audio, since native TTS is instant */
-
         /* NEW: Level 3 Hint button style */
         #tts-hint-btn-3 {
             background-color: #4f46e5; /* Indigo */
             box-shadow: 0 6px #3730a3;
         }
-        
         
         /* Fixed Feedback Button Container for Vertical Stacking */
         .feedback-button-container {
@@ -260,10 +284,7 @@
         
         <!-- 1. HOME SCREEN (CATEGORY SELECTION) -->
         <div id="home-screen" class="p-4">
-            <!-- Removed: Choose a Learning Theme -->
-            <div id="category-list" class="category-grid">
-                <!-- Category buttons will be inserted here by JavaScript -->
-            </div>
+            <div id="category-list" class="category-grid"></div>
         </div>
 
         <!-- 2. LEVEL 1 QUIZ SCREEN (Audio to Image) -->
@@ -274,7 +295,6 @@
                 Question <span id="current-question-count-1">0</span> / <span id="total-question-count-1">0</span>
             </p>
 
-            <!-- TTS Button with Font Awesome Icon -->
             <button id="tts-btn-1" class="tts-button">
                 <span id="tts-icon-1">
                     <i class="fas fa-volume-up"></i>
@@ -282,16 +302,14 @@
             </button>
             <p class="text-lg font-semibold text-gray-600 mb-6">Tap to hear the word!</p>
 
-            <!-- Image Options - 3 columns -->
-            <div id="image-options-container" class="grid grid-cols-3 gap-4">
-                <!-- Image options will be inserted here -->
-            </div>
+            <div id="image-options-container" class="grid grid-cols-3 gap-4"></div>
 
-            <!-- Feedback and Next Button (L1) -->
             <div id="feedback-area-1" class="mt-6 min-h-12">
                 <p id="feedback-text-1" class="text-lg font-bold"></p>
                  <div class="feedback-button-container">
-                    <button id="next-level1-btn" class="game-button hidden bg-indigo-500">NEXT WORD</button>
+                    <button id="next-level1-btn" class="game-button next-btn-styled hidden">
+                        NEXT WORD <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -304,88 +322,77 @@
                 Question <span id="current-question-count-2">0</span> / <span id="total-question-count-2">0</span>
             </p>
 
-            <!-- Target Image -->
             <div class="h-48 flex justify-center items-center mb-6">
                 <img id="target-image-2" class="max-h-full max-w-full rounded-lg shadow-xl border-4 border-gray-200" src="" alt="Target Image">
             </div>
 
             <p class="text-lg font-semibold text-gray-600 mb-6">Hear and select the word matching the image</p>
 
-            <!-- Audio Options (3 options in a 3-column grid) -->
             <div id="audio-options-container" class="grid grid-cols-3 gap-4">
-                <!-- Option 1 -->
                 <div class="flex flex-col gap-2">
-                    <button class="level2-play-btn game-button" data-word=""><i class="fas fa-volume-up"></i> Listen</button>
-                    <button class="level2-select-btn game-button" data-word="">Select</button>
+                    <button class="level2-play-btn game-button"><i class="fas fa-volume-up"></i> Listen</button>
+                    <button class="level2-select-btn game-button">Select</button>
                 </div>
-                <!-- Option 2 -->
                 <div class="flex flex-col gap-2">
-                    <button class="level2-play-btn game-button" data-word=""><i class="fas fa-volume-up"></i> Listen</button>
-                    <button class="level2-select-btn game-button" data-word="">Select</button>
+                    <button class="level2-play-btn game-button"><i class="fas fa-volume-up"></i> Listen</button>
+                    <button class="level2-select-btn game-button">Select</button>
                 </div>
-                <!-- Option 3 (Re-enabled) -->
                 <div class="flex flex-col gap-2">
-                    <button class="level2-play-btn game-button" data-word=""><i class="fas fa-volume-up"></i> Listen</button>
-                    <button class="level2-select-btn game-button" data-word="">Select</button>
+                    <button class="level2-play-btn game-button"><i class="fas fa-volume-up"></i> Listen</button>
+                    <button class="level2-select-btn game-button">Select</button>
                 </div>
             </div>
 
-            <!-- Feedback and Next Button (L2) -->
             <div id="feedback-area-2" class="mt-6 min-h-12">
                 <p id="feedback-text-2" class="text-lg font-bold"></p>
                 <div class="feedback-button-container">
-                    <button id="next-level2-btn" class="game-button hidden bg-indigo-500" onclick="App.loadNextLevel2Question()">NEXT WORD</button>
+                    <button id="next-level2-btn" class="game-button next-btn-styled hidden">
+                        NEXT WORD <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- 4. LEVEL 3 QUIZ SCREEN (Speech Recognition) -->
-        <div id="level3-screen" class="hidden text-center p-4">
-            <h2 id="current-theme-title-3" class="text-2xl font-bold level-title-container">Theme: Loading...</h2>
-            
+        <div id="level3-screen" class="text-center p-4 hidden">
+            <h2 id="current-theme-title-3" class="text-2xl font-bold level-title-container">Theme: Family - Level 3</h2>
             <p class="text-lg font-semibold text-gray-600 mb-6">
                 Question <span id="current-question-count-3">0</span> / <span id="total-question-count-3">0</span>
             </p>
 
-            <!-- Target Image -->
             <div class="h-48 flex justify-center items-center mb-6">
                 <img id="target-image-3" class="max-h-full max-w-full rounded-lg shadow-xl border-4 border-gray-200" src="" alt="Target Image">
             </div>
 
-            <p class="text-lg font-semibold text-gray-600 mb-6">Pronounce the word matching the image (Hint available):</p>
+            <p class="text-lg font-semibold text-gray-600 mb-6">Pronounce the word matching the image:</p>
 
-            <!-- Microphone Button and HINT Button (NEW FLEX CONTAINER) -->
             <div class="flex justify-center items-center space-x-6">
-                <!-- Microphone Button -->
-                <button id="mic-btn-3" class="tts-button" onclick="App.startSpeechRecognition()">
-                    <span id="mic-icon-3">
-                        <i class="fas fa-microphone"></i>
-                    </span>
+                <button id="mic-btn-3" class="tts-button">
+                    <span id="mic-icon-3"><i class="fas fa-microphone"></i></span>
                 </button>
-                <!-- HINT Speaker Button (NEW) -->
-                <button id="tts-hint-btn-3" class="tts-button !bg-indigo-500" onclick="App.speakWord(App.state.currentWord.word)">
+                <button id="tts-hint-btn-3" class="tts-button !bg-indigo-500">
                     <i class="fas fa-volume-up"></i>
                 </button>
             </div>
 
-            <p id="recognition-status" class="text-sm text-gray-500 mt-2 min-h-6">Tap the microphone to speak.</p>
+            <p id="recognition-status" class="text-sm text-gray-500 mt-2 min-h-6">Pronounce the word you see.</p>
 
-            <!-- Feedback and Next Button (L3) -->
             <div id="feedback-area-3" class="mt-6 min-h-12">
                 <p id="feedback-text-3" class="text-lg font-bold"></p>
                 <div class="feedback-button-container">
-                    <button id="skip-level3-btn" class="game-button bg-red-500 hover:bg-red-600 active:bg-red-700" onclick="App.skipCurrentQuestion()">SKIP WORD</button>
-                    <button id="next-level3-btn" class="game-button hidden bg-indigo-500" onclick="App.loadNextLevel3Question()">NEXT WORD</button>
+                    <button id="skip-level3-btn" class="game-button bg-red-500 hover:bg-red-600 active:bg-red-700 hidden">SKIP WORD</button>
+                    <button id="next-level3-btn" class="game-button next-btn-styled hidden">
+                        NEXT WORD <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
         
         <!-- 5. LEVEL COMPLETE SCREEN -->
-        <div id="level-complete-screen" class="hidden text-center p-4">
+        <div id="level-complete-screen" class="text-center p-4 hidden">
             <h2 class="text-3xl font-bold text-green-600 mb-4">LEVEL COMPLETE!</h2>
             <p class="text-xl text-gray-700 mb-6">You successfully completed <span id="completed-theme"></span>!</p>
             <p class="text-lg text-gray-600 mb-8">Score gained in this level: <span id="theme-score" class="font-bold text-purple-600">0.0</span></p>
-            
             <button class="game-button default w-full mb-3" onclick="App.showHomeScreen()">BACK TO THEME SELECTION</button>
             <p class="text-sm text-gray-500 mt-4"><span id="next-level-message"></span></p>
         </div>
@@ -393,8 +400,6 @@
 </div>
 
 <script>
-    
-    // Global variable for progress key
     const PROGRESS_KEY = 'vocab_game_progress'; 
 
     // --- SPEECH RECOGNITION SETUP ---
@@ -408,15 +413,12 @@
         recognition.maxAlternatives = 1; 
     }
 
-    // --- GAME DATA STRUCTURE (Definitive list with file extensions) ---
     const BASE_IMAGE_URL = "https://regine-lambrecht.github.io/ingles_Mikael/images/";
-    
-    // Structure: { word: "Word", ext: ".ext" }
     const WORD_DATA_DETAILS = {
         "Animals": [
             { word: "Bird", ext: ".png" }, { word: "Cat", ext: ".png" }, { word: "Chicken", ext: ".png" },
-            { word: "Cow", ext: ".png" }, { word: "Dog", ext: ".jpg" }, { word: "Duck", ext: ".jpg" },
-            { word: "Elephant", ext: ".jpg" }, { word: "Fish", ext: ".png" }, { word: "Frog", ext: ".jpg" },
+            { word: "Cow", ext: ".png" }, { word: "Dog", ext: ".jpg" }, { word: "Dog", ext: ".png" },
+            { word: "Duck", ext: ".jpg" }, { word: "Elephant", ext: ".jpg" }, { word: "Fish", ext: ".png" }, { word: "Frog", ext: ".jpg" },
             { word: "Horse", ext: ".jpg" }, { word: "Lion", ext: ".jpg" }, { word: "Monkey", ext: ".jpg" },
             { word: "Pig", ext: ".jpg" }, { word: "Rabbit", ext: ".jpg" }, { word: "Snake", ext: ".jpg" },
             { word: "Turtle", ext: ".jpg" }
@@ -540,26 +542,15 @@
         ]
     };
 
-    // --- PROGRESS MANAGEMENT UTILITIES ---
-
     function getThemeProgress() {
         try {
-            // Using placeholder for Firestore setup when running in local development context
-            const progress = JSON.parse(localStorage.getItem(PROGRESS_KEY));
-            const actualProgress = progress || {};
-
-            // --- TEMPORARY OVERRIDE FOR DEMO/TEST (START) ---
-            // 'Body' should be at Level 2 (L1 solved, ready for L2)
-            actualProgress["Body"] = 2; 
-            // 'Family' should be at Level 3 (L2 solved, ready for L3)
-            actualProgress["Family"] = 3; 
-            // 'Animals' is now Mastered (Level 4)
-            actualProgress["Animals"] = 4;
-            // --- TEMPORARY OVERRIDE FOR DEMO/TEST (END) ---
-
-            return actualProgress;
+            const progress = JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
+            // --- DEMO MODE OVERRIDES ---
+            progress["Body"] = progress["Body"] || 2; 
+            progress["Family"] = progress["Family"] || 3; 
+            progress["Animals"] = progress["Animals"] || 4;
+            return progress;
         } catch (e) {
-            console.error("Error loading progress from localStorage", e);
             return {};
         }
     }
@@ -570,37 +561,32 @@
         localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
     }
 
-    // --- GAME STATE ---
     const App = {
         state: {
             currentScreen: 'HOME',
             score: 0.0,
-            themeScore: 0.0, // Score accumulated in the current theme/level session
+            themeScore: 0.0,
             currentCategory: null,
             currentLevel: 1,
             currentWord: null, 
             categoryWordsQueue: [],
             currentQuestionWords: [],
             isAwaitingAnswer: false,
-            // REMOVED audioCache, as we are relying on instant native TTS
             currentQuestionNumber: 0,
             totalQuestions: 0,
         },
         
-        // --- DOM REFERENCES ---
         dom: {
             scoreDisplay: document.getElementById('score'),
             homeScreen: document.getElementById('home-screen'),
             level1Screen: document.getElementById('level1-screen'),
             level2Screen: document.getElementById('level2-screen'),
-            level3Screen: document.getElementById('level3-screen'), // NEW REF
+            level3Screen: document.getElementById('level3-screen'),
             levelCompleteScreen: document.getElementById('level-complete-screen'),
-            // NEW MASTERED SCREEN REF
-            levelMasteredScreen: document.getElementById('level-mastered-screen'),
             categoryList: document.getElementById('category-list'),
             backToHomeBtn: document.getElementById('back-to-home-btn'),
             
-            // Level 1 Refs
+            // L1
             currentThemeTitle1: document.getElementById('current-theme-title-1'),
             ttsBtn1: document.getElementById('tts-btn-1'),
             ttsIcon1: document.getElementById('tts-icon-1'),
@@ -610,7 +596,7 @@
             currentQuestionCount1: document.getElementById('current-question-count-1'),
             totalQuestionCount1: document.getElementById('total-question-count-1'),
 
-            // Level 2 Refs
+            // L2
             currentThemeTitle2: document.getElementById('current-theme-title-2'),
             targetImage2: document.getElementById('target-image-2'),
             audioOptionsContainer: document.getElementById('audio-options-container'),
@@ -618,14 +604,14 @@
             nextLevel2Btn: document.getElementById('next-level2-btn'),
             currentQuestionCount2: document.getElementById('current-question-count-2'),
             totalQuestionCount2: document.getElementById('total-question-count-2'),
-            level2PlayBtns: null, // Initialized in init
-            level2SelectBtns: null, // Initialized in init
+            level2PlayBtns: [],
+            level2SelectBtns: [],
             
-            // Level 3 Refs (NEW)
+            // L3
             currentThemeTitle3: document.getElementById('current-theme-title-3'),
             targetImage3: document.getElementById('target-image-3'),
             micBtn3: document.getElementById('mic-btn-3'),
-            ttsHintBtn3: document.getElementById('tts-hint-btn-3'), // NEW HINT BUTTON
+            ttsHintBtn3: document.getElementById('tts-hint-btn-3'),
             micIcon3: document.getElementById('mic-icon-3'),
             recognitionStatus: document.getElementById('recognition-status'),
             feedbackText3: document.getElementById('feedback-text-3'),
@@ -633,41 +619,26 @@
             currentQuestionCount3: document.getElementById('current-question-count-3'),
             totalQuestionCount3: document.getElementById('total-question-count-3'),
             
-            // Completion Refs
+            // Complete
             completedTheme: document.getElementById('completed-theme'),
             themeScoreDisplay: document.getElementById('theme-score'),
             nextLevelMessage: document.getElementById('next-level-message'),
         },
 
-        // --- CORE GAME LOGIC ---
-
         init() {
-            // Initialize Level 2 button lists (Play and Select)
-            this.dom.level2PlayBtns = this.dom.audioOptionsContainer.querySelectorAll('.level2-play-btn');
-            this.dom.level2SelectBtns = this.dom.audioOptionsContainer.querySelectorAll('.level2-select-btn');
+            this.dom.level2PlayBtns = Array.from(this.dom.audioOptionsContainer.querySelectorAll('.level2-play-btn'));
+            this.dom.level2SelectBtns = Array.from(this.dom.audioOptionsContainer.querySelectorAll('.level2-select-btn'));
             
-            // Attach Click Handlers Dynamically (FIX for App.function is not a function)
             this.dom.backToHomeBtn.addEventListener('click', () => this.showHomeScreen());
-            this.dom.ttsBtn1.addEventListener('click', () => App.speakWord(App.state.currentWord.word));
-            
-            // L1 Next Button
+            this.dom.ttsBtn1.addEventListener('click', () => this.speakWord(this.state.currentWord.word));
             this.dom.nextLevel1Btn.addEventListener('click', () => this.loadNextLevel1Question());
-            
-            // L2 Buttons
             this.dom.nextLevel2Btn.addEventListener('click', () => this.loadNextLevel2Question());
             
-            // L3 Buttons (FIXED: Attached dynamically to resolve reference error)
             this.dom.micBtn3.addEventListener('click', () => this.startSpeechRecognition());
-            this.dom.ttsHintBtn3.addEventListener('click', () => {
-                if (App.state.currentWord && App.state.currentWord.word) {
-                    App.speakWord(App.state.currentWord.word);
-                }
-            });
+            this.dom.ttsHintBtn3.addEventListener('click', () => this.speakWord(this.state.currentWord.word));
             this.dom.nextLevel3Btn.addEventListener('click', () => this.loadNextLevel3Question());
             document.getElementById('skip-level3-btn').addEventListener('click', () => this.skipCurrentQuestion());
 
-
-            // Set up Speech Recognition listeners
             if (recognition) {
                 recognition.onresult = this.handleRecognitionResult.bind(this);
                 recognition.onend = this.handleRecognitionEnd.bind(this);
@@ -678,30 +649,16 @@
         },
 
         updateScreen() {
-            this.dom.homeScreen.classList.add('hidden');
-            this.dom.level1Screen.classList.add('hidden');
-            this.dom.level2Screen.classList.add('hidden');
-            this.dom.level3Screen.classList.add('hidden'); // NEW
-            this.dom.levelCompleteScreen.classList.add('hidden');
+            const screens = [this.dom.homeScreen, this.dom.level1Screen, this.dom.level2Screen, this.dom.level3Screen, this.dom.levelCompleteScreen];
+            screens.forEach(s => s.classList.add('hidden'));
             this.dom.backToHomeBtn.classList.remove('hidden');
             
             switch (this.state.currentScreen) {
-                case 'HOME':
-                    this.dom.homeScreen.classList.remove('hidden');
-                    this.dom.backToHomeBtn.classList.add('hidden');
-                    break;
-                case 'LEVEL1':
-                    this.dom.level1Screen.classList.remove('hidden');
-                    break;
-                case 'LEVEL2':
-                    this.dom.level2Screen.classList.remove('hidden');
-                    break;
-                case 'LEVEL3': // NEW
-                    this.dom.level3Screen.classList.remove('hidden');
-                    break;
-                case 'LEVEL_COMPLETE':
-                    this.dom.levelCompleteScreen.classList.remove('hidden');
-                    break;
+                case 'HOME': this.dom.homeScreen.classList.remove('hidden'); this.dom.backToHomeBtn.classList.add('hidden'); break;
+                case 'LEVEL1': this.dom.level1Screen.classList.remove('hidden'); break;
+                case 'LEVEL2': this.dom.level2Screen.classList.remove('hidden'); break;
+                case 'LEVEL3': this.dom.level3Screen.classList.remove('hidden'); break;
+                case 'LEVEL_COMPLETE': this.dom.levelCompleteScreen.classList.remove('hidden'); break;
             }
             this.dom.scoreDisplay.textContent = this.state.score.toFixed(1);
         },
@@ -709,30 +666,20 @@
         showHomeScreen() {
             this.state.currentScreen = 'HOME';
             this.updateScreen();
-
             const categories = Object.keys(WORD_DATA_DETAILS);
             this.dom.categoryList.innerHTML = '';
             const progress = getThemeProgress();
 
             categories.forEach(category => {
-                const currentLevel = progress[category] || 1; // 1: L1 active, 2: L2 active, 3: Mastered
-                const wordCount = WORD_DATA_DETAILS[category].length; // Get unique word count
-
+                const currentLevel = progress[category] || 1;
+                const wordCount = WORD_DATA_DETAILS[category].length;
                 let buttonClass = 'game-button';
-                
-                if (currentLevel >= 3) {
-                    // Level 3 Unlocked/Mastered: Green style
-                    buttonClass += ' mastered';
-                } else if (currentLevel >= 2) {
-                    // Level 2 Unlocked: Dark blue style
-                    buttonClass += ' unlocked';
-                } else {
-                    // Level 1 Active: Light blue style
-                    buttonClass += ' default';
-                }
+                if (currentLevel >= 4) buttonClass += ' mastered-final';
+                else if (currentLevel >= 3) buttonClass += ' mastered';
+                else if (currentLevel >= 2) buttonClass += ' unlocked';
+                else buttonClass += ' default';
                 
                 const btn = document.createElement('button');
-                // Update button text format: ThemeName (WordCount)
                 btn.textContent = `${category} (${wordCount})`; 
                 btn.className = buttonClass;
                 btn.onclick = () => this.startLevel(category, currentLevel);
@@ -745,666 +692,215 @@
             this.state.themeScore = 0.0;
             this.state.currentLevel = currentLevel;
 
-            if (currentLevel === 1) {
-                this.startLevel1(category);
-            } else if (currentLevel === 2) {
-                this.startLevel2(category);
-            } else {
-                this.startLevel3(category);
-            }
-        },
-
-        /**
-         * Skips the current question and loads the next one based on the current level.
-         */
-        skipCurrentQuestion() {
-            if (!this.state.isAwaitingAnswer) return; // Prevent skipping after completion
-            
-            this.state.isAwaitingAnswer = false;
-
-            const currentLevel = this.state.currentLevel;
-            const loadNextFunc = currentLevel === 1 ? this.loadNextLevel1Question.bind(this) : 
-                                 currentLevel === 2 ? this.loadNextLevel2Question.bind(this) : 
-                                 this.loadNextLevel3Question.bind(this);
-
-            // Display skip message
-            const feedbackTarget = currentLevel === 1 ? this.dom.feedbackText1 : 
-                                   currentLevel === 2 ? this.dom.feedbackText2 : 
-                                   this.dom.feedbackText3;
-            
-            feedbackTarget.textContent = `Skipped! The word was "${this.state.currentWord.word}".`;
-            feedbackTarget.className = 'text-lg font-bold text-red-600';
-
-            // Find the correct 'Next' button element to display
-            const nextBtn = currentLevel === 1 ? this.dom.nextLevel1Btn : 
-                            currentLevel === 2 ? this.dom.nextLevel2Btn : 
-                            this.dom.nextLevel3Btn;
-
-            // Hide the skip button and show the next button
-            const skipBtn = currentLevel === 3 ? document.getElementById('skip-level3-btn') : null;
-
-            if (skipBtn) skipBtn.classList.add('hidden');
-            if (nextBtn) nextBtn.classList.remove('hidden');
-
-            // If L1, ensure images are un-disabled for inspection (though won't matter much since NEXT is showing)
-            if (currentLevel === 1) {
-                const allImages = this.dom.imageOptionsContainer.querySelectorAll('.image-option');
-                allImages.forEach(img => img.classList.remove('loading-audio'));
-            }
-            
-            // ** FIX: Load next question immediately after skip feedback **
-            setTimeout(loadNextFunc, 1000); 
-        },
-
-        
-        // --- Enabling Logic ---
-
-        enableElementByWord(word) {
-            // NOTE: Since we are using instant native TTS now, the loading-audio class should be removed on page load,
-            // but we keep this function structure in case we re-enable Cloud TTS.
-            if (this.state.currentScreen === 'LEVEL1') {
-                const element = this.dom.imageOptionsContainer.querySelector(`[data-word="${word}"]`);
-                if (element) {
-                    element.classList.remove('loading-audio');
-                }
-            } else if (this.state.currentScreen === 'LEVEL2') {
-                const playButton = this.dom.audioOptionsContainer.querySelector(`.level2-play-btn[data-word="${word}"]`);
-                const selectButton = this.dom.audioOptionsContainer.querySelector(`.level2-select-btn[data-word="${word}"]`);
-                
-                if (playButton) {
-                    playButton.classList.remove('loading-audio');
-                    playButton.disabled = false;
-                }
-                if (selectButton) {
-                    selectButton.classList.remove('loading-audio');
-                    selectButton.disabled = false;
-                }
-            }
-        },
-
-        // --- LEVEL 1 (Audio to Image) LOGIC ---
-        startLevel1(category) {
-            this.state.currentScreen = 'LEVEL1';
-            
-            const initialWords = WORD_DATA_DETAILS[category];
-            this.state.categoryWordsQueue = [...initialWords, ...initialWords].sort(() => Math.random() - 0.5); 
-            
-            this.state.totalQuestions = this.state.categoryWordsQueue.length;
-            this.state.currentQuestionNumber = 0;
-
-            this.dom.currentThemeTitle1.textContent = `Theme: ${category} - Level 1`;
-            this.dom.nextLevel1Btn.classList.add('hidden');
-            this.dom.feedbackText1.textContent = '';
-            this.dom.ttsBtn1.onclick = () => App.speakWord(App.state.currentWord.word); // Ensure repeated clicks work
-            
-            this.updateScreen();
-            this.loadNextLevel1Question();
-        },
-
-        loadNextLevel1Question() {
-            if (this.state.categoryWordsQueue.length === 0) {
-                this.finishLevel1();
+            // If level 4+, show the celebration screen directly
+            if (currentLevel >= 4) {
+                this.showComplete(3);
                 return;
             }
 
+            const initialWords = WORD_DATA_DETAILS[category];
+            this.state.categoryWordsQueue = [...initialWords, ...initialWords].sort(() => Math.random() - 0.5); 
+            this.state.totalQuestions = this.state.categoryWordsQueue.length;
+            this.state.currentQuestionNumber = 0;
+
+            if (currentLevel === 1) {
+                this.state.currentScreen = 'LEVEL1';
+                this.dom.currentThemeTitle1.textContent = `Theme: ${category} - Level 1`;
+                this.loadNextLevel1Question();
+            } else if (currentLevel === 2) {
+                this.state.currentScreen = 'LEVEL2';
+                this.dom.currentThemeTitle2.textContent = `Theme: ${category} - Level 2`;
+                this.loadNextLevel2Question();
+            } else {
+                this.startLevel3(category);
+            }
+            this.updateScreen();
+        },
+
+        loadNextLevel1Question() {
+            if (this.state.categoryWordsQueue.length === 0) { this.finishLevel1(); return; }
             this.state.currentQuestionNumber++;
             this.dom.currentQuestionCount1.textContent = this.state.currentQuestionNumber;
             this.dom.totalQuestionCount1.textContent = this.state.totalQuestions;
-
             this.state.isAwaitingAnswer = true;
             this.dom.nextLevel1Btn.classList.add('hidden');
-            // Skip button remains hidden in L1
-
             this.dom.feedbackText1.textContent = '';
-            this.dom.feedbackText1.className = 'text-lg font-bold';
-            
-            const correctWordObject = this.state.categoryWordsQueue.pop();
-            this.state.currentWord = correctWordObject;
-
-            const categoryWordObjects = WORD_DATA_DETAILS[this.state.currentCategory];
-            
-            // Check for missing word data before proceeding
-            if (!categoryWordObjects || categoryWordObjects.length < 3) {
-                console.error("Error: Missing or insufficient word data for category:", this.state.currentCategory);
-                this.state.currentWord = { word: "Data Error" }; // Prevent null error if we proceed
-                this.skipCurrentQuestion(); 
-                return; 
-            }
-            
-            const distractors = this.getRandomWordObjects(categoryWordObjects, correctWordObject, 2);
-
-            this.state.currentQuestionWords = [correctWordObject, ...distractors].sort(() => Math.random() - 0.5);
-            
+            this.state.currentWord = this.state.categoryWordsQueue.pop();
+            const distractors = this.getRandomWordObjects(WORD_DATA_DETAILS[this.state.currentCategory], this.state.currentWord, 2);
+            this.state.currentQuestionWords = [this.state.currentWord, ...distractors].sort(() => Math.random() - 0.5);
             this.renderLevel1ImageOptions();
-            
-            // 1. Play native TTS immediately
-            this.speakWord(this.state.currentWord.word, true);
-
-            // 2. We don't need a spinner or delayed enabling since native TTS is instant
-            this.state.currentQuestionWords.forEach(wordObj => {
-                this.enableElementByWord(wordObj.word);
-            });
+            this.speakWord(this.state.currentWord.word);
         },
 
         renderLevel1ImageOptions() {
             this.dom.imageOptionsContainer.innerHTML = '';
-            // Change grid-cols-2 back to grid-cols-3
-            this.dom.imageOptionsContainer.className = 'grid grid-cols-3 gap-4'; 
-
             this.state.currentQuestionWords.forEach(wordObject => {
-                const imageUrl = this.getWordImageUrl(this.state.currentCategory, wordObject);
-                
                 const img = document.createElement('img');
-                // REMOVED loading-audio class
-                img.className = 'image-option'; 
-                img.src = imageUrl;
-                img.setAttribute('data-word', wordObject.word); 
-                img.alt = `Image for ${wordObject.word}`;
-                img.onerror = () => { img.src = this.getPlaceholderUrl(); };
-                
-                img.onclick = (e) => {
-                    // *** FIX: Restore audio on option click in Level 1 ***
-                    App.speakWord(e.target.getAttribute('data-word')); 
-                    
-                    if (!App.state.isAwaitingAnswer) return; 
-
-                    const selectedWord = e.target.getAttribute('data-word');
-                    App.checkLevel1Answer(selectedWord, img);
+                img.className = 'image-option';
+                img.src = this.getWordImageUrl(this.state.currentCategory, wordObject);
+                img.onclick = () => {
+                    this.speakWord(wordObject.word);
+                    if (this.state.isAwaitingAnswer) this.checkLevel1Answer(wordObject.word, img);
                 };
-                
                 this.dom.imageOptionsContainer.appendChild(img);
             });
         },
 
         checkLevel1Answer(selectedWord, selectedImage) {
-            if (!this.state.isAwaitingAnswer) return;
-
-            const isCorrect = selectedWord === this.state.currentWord.word;
-            
-            selectedImage.classList.remove('incorrect', 'correct');
-
-            if (isCorrect) {
-                this.state.isAwaitingAnswer = false; 
+            if (selectedWord === this.state.currentWord.word) {
+                this.state.isAwaitingAnswer = false;
                 selectedImage.classList.add('correct');
-                
-                this.state.score += 0.5;
-                this.state.themeScore += 0.5;
+                this.state.score += 0.5; this.state.themeScore += 0.5;
                 this.dom.scoreDisplay.textContent = this.state.score.toFixed(1);
-                
                 this.dom.feedbackText1.textContent = `Correct!`;
                 this.dom.feedbackText1.className = 'text-lg font-bold text-green-600';
-                
-                // FIX: Next button is shown correctly here
                 this.dom.nextLevel1Btn.classList.remove('hidden');
-
             } else {
                 selectedImage.classList.add('incorrect');
-                
                 this.dom.feedbackText1.textContent = `Wrong. Try again!`;
                 this.dom.feedbackText1.className = 'text-lg font-bold text-red-600';
             }
         },
-        
-        finishLevel1() {
-            setThemeLevel(this.state.currentCategory, 2); // Unlock Level 2
-            
-            this.state.currentScreen = 'LEVEL_COMPLETE';
-            this.dom.completedTheme.textContent = `${this.state.currentCategory} - Level 1`;
-            this.dom.themeScoreDisplay.textContent = this.state.themeScore.toFixed(1);
-            this.dom.nextLevelMessage.textContent = `Level 2 has been unlocked for ${this.state.currentCategory}!`;
-            this.updateScreen();
-        },
-
-        // --- LEVEL 2 (Image to Audio) LOGIC ---
-        startLevel2(category) {
-            this.state.currentScreen = 'LEVEL2';
-            
-            const initialWords = WORD_DATA_DETAILS[category];
-            this.state.categoryWordsQueue = [...initialWords, ...initialWords].sort(() => Math.random() - 0.5); 
-            
-            this.state.totalQuestions = this.state.categoryWordsQueue.length;
-            this.state.currentQuestionNumber = 0;
-
-            this.dom.currentThemeTitle2.textContent = `Theme: ${category} - Level 2`;
-            this.dom.nextLevel2Btn.classList.add('hidden');
-            this.dom.feedbackText2.textContent = '';
-
-            this.updateScreen();
-            this.loadNextLevel2Question();
-        },
 
         loadNextLevel2Question() {
-            if (this.state.categoryWordsQueue.length === 0) {
-                this.finishLevel2();
-                return;
-            }
-
+            if (this.state.categoryWordsQueue.length === 0) { this.finishLevel2(); return; }
             this.state.currentQuestionNumber++;
             this.dom.currentQuestionCount2.textContent = this.state.currentQuestionNumber;
             this.dom.totalQuestionCount2.textContent = this.state.totalQuestions;
-
             this.state.isAwaitingAnswer = true;
             this.dom.nextLevel2Btn.classList.add('hidden');
-            // Skip button remains hidden in L2
-
             this.dom.feedbackText2.textContent = '';
-            this.dom.feedbackText2.className = 'text-lg font-bold';
+            this.state.currentWord = this.state.categoryWordsQueue.pop();
+            const distractors = this.getRandomWordObjects(WORD_DATA_DETAILS[this.state.currentCategory], this.state.currentWord, 2);
+            this.state.currentQuestionWords = [this.state.currentWord, ...distractors].sort(() => Math.random() - 0.5);
             
-            const targetWordObject = this.state.categoryWordsQueue.pop();
-            this.state.currentWord = targetWordObject; 
-
-            const categoryWordObjects = WORD_DATA_DETAILS[this.state.currentCategory];
-            
-            // Check for missing word data before proceeding
-            if (!categoryWordObjects || categoryWordObjects.length < 3) {
-                console.error("Error: Missing or insufficient word data for category:", this.state.currentCategory);
-                this.state.currentWord = { word: "Data Error" }; // Prevent null error if we proceed
-                this.skipCurrentQuestion(); 
-                return; 
-            }
-
-            // *** FIX: Restore 2 distractors (Total 3 options) ***
-            const distractors = this.getRandomWordObjects(categoryWordObjects, targetWordObject, 2);
-
-            this.state.currentQuestionWords = [targetWordObject, ...distractors].sort(() => Math.random() - 0.5);
-            
-            this.renderLevel2UI(targetWordObject);
-            
-            // L2: No caching needed, native TTS is instant
-            this.state.currentQuestionWords.forEach(wordObj => {
-                this.enableElementByWord(wordObj.word);
+            this.dom.targetImage2.src = this.getWordImageUrl(this.state.currentCategory, this.state.currentWord);
+            this.dom.level2SelectBtns.forEach((btn, idx) => {
+                btn.classList.remove('correct', 'incorrect');
+                const word = this.state.currentQuestionWords[idx].word;
+                this.dom.level2PlayBtns[idx].onclick = () => this.speakWord(word);
+                btn.onclick = () => this.checkLevel2Answer(word, btn);
             });
         },
 
-        renderLevel2UI(targetWordObject) {
-            // Set the target image
-            const imageUrl = this.getWordImageUrl(this.state.currentCategory, targetWordObject);
-            this.dom.targetImage2.src = imageUrl;
-            this.dom.targetImage2.onerror = () => { this.dom.targetImage2.src = this.getPlaceholderUrl(); };
-            
-            // Set the audio and select buttons
-            
-            // Ensure the container is set to 3 columns
-            this.dom.audioOptionsContainer.className = 'grid grid-cols-3 gap-4';
-            
-            // Iterate through all three button groups (now includes index 2)
-            for (let index = 0; index < 3; index++) {
-                const selectBtn = this.dom.level2SelectBtns[index];
-                const playBtn = this.dom.level2PlayBtns[index];
-                const wordObject = this.state.currentQuestionWords[index];
-                const container = this.dom.audioOptionsContainer.children[index];
-
-                // Ensure the container is visible
-                if (container) {
-                    container.style.display = 'flex';
-                }
-
-                // Reset button appearance AND apply loading/disabled state initially
-                selectBtn.classList.remove('correct', 'incorrect');
-                selectBtn.disabled = false; // REMOVED loading-audio
-
-                playBtn.classList.remove('correct', 'incorrect');
-                playBtn.disabled = false; // REMOVED loading-audio
-
-                // Set data attributes
-                selectBtn.setAttribute('data-word', wordObject.word);
-                playBtn.setAttribute('data-word', wordObject.word);
-
-                // Play Button Handler (Listen)
-                playBtn.onclick = () => {
-                    App.speakWord(wordObject.word); // Always allow listening
-                };
-
-                // Select Button Handler (Check Answer)
-                selectBtn.onclick = () => {
-                    if (!App.state.isAwaitingAnswer) {
-                        // Allow continuous audio playback after correct answer
-                        App.speakWord(wordObject.word); 
-                        return;
-                    }
-                    // Play audio one last time and check
-                    App.speakWord(wordObject.word); 
-                    App.checkLevel2Answer(wordObject.word, selectBtn);
-                };
-            }
-        },
-
         checkLevel2Answer(selectedWord, selectedButton) {
-            if (!this.state.isAwaitingAnswer) return;
-            
-            // ** FIX: Guard against selectedButton being null/undefined (causing the TypeError)**
-            if (!selectedButton) return; 
+            if (!this.state.isAwaitingAnswer) {
+                this.speakWord(selectedWord);
+                return;
+            }
 
-            const isCorrect = selectedWord === this.state.currentWord.word;
-            
-            selectedButton.classList.remove('incorrect', 'correct');
-
-            if (isCorrect) {
-                this.state.isAwaitingAnswer = false; 
+            this.speakWord(selectedWord);
+            if (selectedWord === this.state.currentWord.word) {
+                this.state.isAwaitingAnswer = false;
                 selectedButton.classList.add('correct');
-                
-                // DO NOT disable clicks here - allows continuous audio playback
-                
-                this.state.score += 0.5;
-                this.state.themeScore += 0.5;
+                this.state.score += 0.5; this.state.themeScore += 0.5;
                 this.dom.scoreDisplay.textContent = this.state.score.toFixed(1);
-                
                 this.dom.feedbackText2.textContent = `Correct!`;
                 this.dom.feedbackText2.className = 'text-lg font-bold text-green-600';
-                
-                document.getElementById('skip-level2-btn').classList.add('hidden');
-                // FIX: Next button is shown correctly here
-                this.dom.nextLevel2Btn.classList.remove('hidden');
 
+                // Check if more words remain in Level 2
+                if (this.state.categoryWordsQueue.length > 0) {
+                    this.dom.nextLevel2Btn.classList.remove('hidden');
+                } else {
+                    // Automatically transition to success screen
+                    setTimeout(() => this.finishLevel2(), 1500);
+                }
             } else {
                 selectedButton.classList.add('incorrect');
-                
                 this.dom.feedbackText2.textContent = `Wrong. Try again!`;
                 this.dom.feedbackText2.className = 'text-lg font-bold text-red-600';
             }
         },
 
-        finishLevel2() {
-            setThemeLevel(this.state.currentCategory, 3); // Unlock Level 3
-
-            this.state.currentScreen = 'LEVEL_COMPLETE';
-            this.dom.completedTheme.textContent = `${this.state.currentCategory} - Level 2`;
-            this.dom.themeScoreDisplay.textContent = this.state.themeScore.toFixed(1);
-            this.dom.nextLevelMessage.textContent = `Level 3 (Pronunciation Test) has been unlocked for ${this.state.currentCategory}!`;
-            this.updateScreen();
-        },
-
-        // --- LEVEL 3 (Speech Recognition) LOGIC (NEW) ---
         startLevel3(category) {
-            if (!recognition) {
-                // Check if the browser supports Speech Recognition
-                alert("Speech Recognition is not supported in this browser. Please try Chrome or Edge.");
-                this.showHomeScreen();
-                return;
-            }
-
+            if (!recognition) { alert("Speech Recognition not supported."); this.showHomeScreen(); return; }
             this.state.currentScreen = 'LEVEL3';
-            
-            const initialWords = WORD_DATA_DETAILS[category];
-            this.state.categoryWordsQueue = [...initialWords, ...initialWords].sort(() => Math.random() - 0.5); 
-            
-            this.state.totalQuestions = this.state.categoryWordsQueue.length;
-            this.state.currentQuestionNumber = 0;
-
             this.dom.currentThemeTitle3.textContent = `Theme: ${category} - Level 3`;
-            this.dom.nextLevel3Btn.classList.add('hidden');
-            this.dom.feedbackText3.textContent = '';
-            this.dom.micBtn3.classList.remove('recording');
-            this.dom.micBtn3.disabled = false;
-            this.dom.ttsHintBtn3.disabled = false;
-            this.dom.recognitionStatus.textContent = 'Tap the microphone to speak.';
-
-            this.updateScreen();
             this.loadNextLevel3Question();
         },
         
         loadNextLevel3Question() {
-            if (this.state.categoryWordsQueue.length === 0) {
-                this.finishLevel3();
-                return;
-            }
-
+            if (this.state.categoryWordsQueue.length === 0) { this.finishLevel3(); return; }
             this.state.currentQuestionNumber++;
             this.dom.currentQuestionCount3.textContent = this.state.currentQuestionNumber;
             this.dom.totalQuestionCount3.textContent = this.state.totalQuestions;
-
             this.state.isAwaitingAnswer = true;
             this.dom.nextLevel3Btn.classList.add('hidden');
             document.getElementById('skip-level3-btn').classList.remove('hidden');
-
             this.dom.feedbackText3.textContent = '';
-            this.dom.feedbackText3.className = 'text-lg font-bold';
-            
-            const targetWordObject = this.state.categoryWordsQueue.pop();
-            this.state.currentWord = targetWordObject; 
-
-            // Preload the audio hint for the current word (L3)
-            // L3 HINT FIX: Disable button before fetch, re-enable on success.
-            this.dom.ttsHintBtn3.disabled = false; // Native TTS is instant, so re-enable immediately
-
-            // Set the target image
-            const imageUrl = this.getWordImageUrl(this.state.currentCategory, targetWordObject);
-            this.dom.targetImage3.src = imageUrl;
-            this.dom.targetImage3.onerror = () => { this.dom.targetImage3.src = this.getPlaceholderUrl(); };
-
-            this.dom.micBtn3.disabled = false;
+            this.state.currentWord = this.state.categoryWordsQueue.pop();
+            this.dom.targetImage3.src = this.getWordImageUrl(this.state.currentCategory, this.state.currentWord);
             this.dom.recognitionStatus.textContent = 'Pronounce the word you see.';
         },
         
         startSpeechRecognition() {
-            if (!recognition) {
-                // Check if the browser supports Speech Recognition
-                alert("Speech Recognition is not supported in this browser. Please try Chrome or Edge.");
-                this.showHomeScreen();
-                return;
-            }
-
-            this.state.currentScreen = 'LEVEL3';
-            
-            const initialWords = WORD_DATA_DETAILS[this.state.currentCategory];
-            if (!initialWords || initialWords.length < 3) {
-                console.error("Error: Missing or insufficient word data for category:", this.state.currentCategory);
-                this.skipCurrentQuestion(); 
-                return; 
-            }
-            
-            const grammar = this.getThemeWordsForGrammar(this.state.currentCategory);
-            
-            // Start listening
             try {
                 recognition.start();
                 this.dom.micBtn3.classList.add('recording');
-                this.dom.recognitionStatus.textContent = 'Listening... Speak Now!';
-                this.dom.micBtn3.disabled = true; // Disable clicking during active listening
-                this.dom.ttsHintBtn3.disabled = true; // Disable hint during listening
-            } catch (e) {
-                console.error("Speech Recognition start failed:", e);
-                // Ignore DOMException errors related to recognition already being active
-                if (e.name !== 'abort') {
-                   this.dom.recognitionStatus.textContent = 'Error: Microphone failed to start.';
-                }
-            }
+                this.dom.recognitionStatus.textContent = 'Listening...';
+            } catch (e) { console.error(e); }
         },
 
         handleRecognitionResult(event) {
-            let recognizedText = event.results[0][0].transcript.trim().toLowerCase();
-            const targetWord = this.state.currentWord.word.toLowerCase();
-            
+            let recognized = event.results[0][0].transcript.trim().toLowerCase();
+            const target = this.state.currentWord.word.toLowerCase();
             this.dom.micBtn3.classList.remove('recording');
-
-            if (!this.state.isAwaitingAnswer) return;
-            
-            // --- FIX: Robust Recognition Check (Normalization) ---
-            // 1. Normalize target word (remove hyphens and spaces)
-            const normalizedTarget = targetWord.replace(/[- ]/g, '');
-            
-            // 2. Normalize recognized text (remove hyphens and spaces)
-            const normalizedRecognized = recognizedText.replace(/[- ]/g, '');
-
-            // 3. Check for exact match OR normalized match
-            const isCorrect = (recognizedText === targetWord) || (normalizedRecognized === normalizedTarget);
-
-            if (isCorrect) {
-                // FIX: Use the original, correctly spaced/hyphenated target word for the success message
-                const displayWord = this.state.currentWord.word; 
-                
-                this.dom.feedbackText3.textContent = `Success! You pronounced "${displayWord}".`;
-                this.dom.feedbackText3.className = 'text-lg font-bold text-green-600';
-                this.dom.recognitionStatus.textContent = 'Perfect Pronunciation!';
-                
+            if (recognized === target || recognized.replace(/[- ]/g, '') === target.replace(/[- ]/g, '')) {
                 this.state.isAwaitingAnswer = false;
-                this.state.score += 0.5;
-                this.state.themeScore += 0.5;
-                this.dom.scoreDisplay.textContent = this.state.score.toFixed(1);
-                
-                document.getElementById('skip-level3-btn').classList.add('hidden');
+                this.state.score += 0.5; this.state.themeScore += 0.5;
+                this.dom.feedbackText3.textContent = `Success! You said "${this.state.currentWord.word}"`;
+                this.dom.feedbackText3.className = 'text-lg font-bold text-green-600';
                 this.dom.nextLevel3Btn.classList.remove('hidden');
+                document.getElementById('skip-level3-btn').classList.add('hidden');
             } else {
-                this.dom.feedbackText3.textContent = `Try Again. Recognized: "${recognizedText}".`;
+                this.dom.feedbackText3.textContent = `Recognized: "${recognized}". Try again!`;
                 this.dom.feedbackText3.className = 'text-lg font-bold text-red-600';
-                this.dom.recognitionStatus.textContent = 'Tap to try again.';
-                this.dom.micBtn3.disabled = false;
-                this.dom.ttsHintBtn3.disabled = false; // Re-enable hint button on failed guess
             }
         },
 
-        handleRecognitionEnd() {
-            if (this.state.isAwaitingAnswer) {
-                this.dom.micBtn3.classList.remove('recording');
-                this.dom.micBtn3.disabled = false;
-                this.dom.ttsHintBtn3.disabled = false; // Re-enable hint button
-            }
-        },
-        
-        handleRecognitionError(event) {
-            console.error("Recognition Error:", event.error);
-            this.dom.micBtn3.classList.remove('recording');
-            if (this.state.isAwaitingAnswer) {
-                 this.dom.micBtn3.disabled = false;
-                 this.dom.ttsHintBtn3.disabled = false; // Re-enable hint button
-                 if (event.error === 'not-allowed') {
-                     this.dom.recognitionStatus.textContent = 'Microphone permission denied. Please allow access.';
-                 } else {
-                     this.dom.recognitionStatus.textContent = 'No speech detected or error occurred. Tap to try again.';
-                 }
-                 
-            }
+        handleRecognitionEnd() { this.dom.micBtn3.classList.remove('recording'); },
+        handleRecognitionError() { this.dom.recognitionStatus.textContent = 'Mic error. Try again.'; },
+
+        skipCurrentQuestion() {
+            this.state.isAwaitingAnswer = false;
+            const current = this.state.currentLevel;
+            if (current === 1) this.loadNextLevel1Question();
+            else if (current === 2) this.loadNextLevel2Question();
+            else this.loadNextLevel3Question();
         },
 
-        getThemeWordsForGrammar(category) {
-            return WORD_DATA_DETAILS[category].map(obj => obj.word).join(', ');
-        },
+        finishLevel1() { setThemeLevel(this.state.currentCategory, 2); this.showComplete(1); },
+        finishLevel2() { setThemeLevel(this.state.currentCategory, 3); this.showComplete(2); },
+        finishLevel3() { setThemeLevel(this.state.currentCategory, 4); this.showComplete(3); },
 
-        finishLevel3() {
-            setThemeLevel(this.state.currentCategory, 4); // Mark theme as fully Mastered
-
+        showComplete(lvl) {
             this.state.currentScreen = 'LEVEL_COMPLETE';
-            this.dom.completedTheme.textContent = `${this.state.currentCategory} - Level 3 (Pronunciation)`;
+            this.dom.completedTheme.textContent = lvl === 3 ? `${this.state.currentCategory}` : `${this.state.currentCategory} - Level ${lvl}`;
             this.dom.themeScoreDisplay.textContent = this.state.themeScore.toFixed(1);
-            this.dom.nextLevelMessage.textContent = `Congratulations! You have mastered the ${this.state.currentCategory} theme!`;
+            this.dom.nextLevelMessage.textContent = lvl === 3 ? "Congratulations! You have mastered this theme!" : `Level ${lvl+1} unlocked!`;
             this.updateScreen();
         },
 
-        // --- UTILITIES (Fixed Space Encoding) ---
-
-        getWordImageUrl(category, wordObject) {
-            // We URL encode the word to correctly handle spaces ("Light blue" -> "Light%20blue")
-            const encodedWord = encodeURIComponent(wordObject.word);
-            
-            // Reconstruct the filename path, maintaining category capitalization and the encoded word
-            const filenameBase = `${category}_${encodedWord}`;
-            
-            // Ensure hyphens are NOT double-encoded if they exist in the original data structure (like Grand-father)
-            // Note: encodeURIComponent encodes hyphens as well, which is not desired here. We manually correct the category and extension.
-            // However, since the goal is to match the URL you provided exactly:
-            // "Light blue" should map to "Colours_Light%20blue.png"
-            // "Grand-father" should map to "Family_Grand-father.png" (hyphen is fine)
-
-            // Let's use string manipulation based on your exact URL format:
-            let filename = `${category}_${wordObject.word}${wordObject.ext}`;
-            // Replace spaces with %20 only in the generated filename part
-            filename = filename.replace(/ /g, '%20'); 
-
-            const exactUrl = `${BASE_IMAGE_URL}${filename}`;
-            return exactUrl;
-        },
-        
-        getPlaceholderUrl() {
-            return `https://placehold.co/150x150/bdbdff/4f46e5?text=IMAGE%20ERROR`;
+        getWordImageUrl(cat, wordObj) {
+            return `${BASE_IMAGE_URL}${cat}_${wordObj.word}${wordObj.ext}`.replace(/ /g, '%20');
         },
 
-        getRandomWordObjects(wordList, excludeWordObject, count) {
-            // FIX: Ensure wordList is treated as an array before filtering
-            if (!Array.isArray(wordList) || wordList.length === 0) {
-                 return [];
-            }
-            
-            const available = wordList.filter(w => w.word !== excludeWordObject.word);
-            if (available.length < count) return available; 
-            
-            const selected = [];
-            const shuffled = [...available].sort(() => 0.5 - Math.random());
-            
-            for (let i = 0; i < count; i++) {
-                selected.push(shuffled[i]);
-            }
-            return selected;
-        },
-        
-        // --- TTS CACHING & PLAYBACK FUNCTIONS (NATIVE TTS ONLY) ---
-
-        async fetchAndCacheAudio(textToSpeak, onCompleteCallback) {
-            // Function maintained for structure, but serves no network purpose now.
-            onCompleteCallback(textToSpeak);
-            return; 
+        getRandomWordObjects(list, exclude, count) {
+            const filtered = list.filter(w => w.word !== exclude.word);
+            return filtered.sort(() => 0.5 - Math.random()).slice(0, count);
         },
 
-        /**
-         * Plays audio: uses instant native TTS.
-         * @param {string} textToSpeak 
-         * @param {boolean} isAutoPlay - True if this is the initial L1 automatic trigger.
-         */
-        async speakWord(textToSpeak, isAutoPlay = false) {
-            if (!textToSpeak) return;
-
-            // 1. Play instantly using native browser TTS.
+        speakWord(text) {
             if ('speechSynthesis' in window) {
-                this.speakNative(textToSpeak);
-            } else {
-                 console.error("Browser does not support native Text-to-Speech.");
-                 const feedbackTarget = this.state.currentScreen === 'LEVEL1' ? this.dom.feedbackText1 : this.dom.feedbackText2;
-                 feedbackTarget.textContent = 'Audio not supported in this browser.';
-                 feedbackTarget.className = 'text-lg font-bold text-red-600';
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'en-GB';
+                window.speechSynthesis.speak(u);
             }
-            
-            // 2. Remove spinner/disabled state immediately after native play (if L1 auto-play)
-            if (isAutoPlay && this.state.currentScreen === 'LEVEL1') {
-                 this.dom.ttsIcon1.classList.remove('spinner');
-                 this.dom.ttsIcon1.innerHTML = '<i class="fas fa-volume-up"></i>';
-                 this.dom.ttsBtn1.disabled = false;
-            }
-        },
-
-        /**
-         * Plays text instantly using the browser's native speech synthesis (set to en-GB).
-         * @param {string} text - The text to speak.
-         */
-        speakNative(text) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.volume = 1.0;
-                utterance.lang = 'en-GB'; // Set to British English
-                window.speechSynthesis.speak(utterance);
-            }
-        },
-        
-        // --- AUDIO UTILITY IMPLEMENTATIONS (Now deprecated but kept for code structure) ---
-        
-        base64ToArrayBuffer(base64) {
-            // Deprecated function, but required for original cache structure
-            return new ArrayBuffer(0); 
-        },
-
-        pcmToWav(pcm16, sampleRate) {
-             // Deprecated function
-             return new Blob([], { type: 'audio/wav' });
-        },
-
-        playAudioBlob(wavBlob) {
-             // Deprecated function
-             const audio = new Audio();
-             audio.volume = 1.0; 
-             audio.play().catch(e => console.error("Audio playback failed:", e));
         }
     };
 
-    // Start the application
     window.onload = () => App.init();
 </script>
+
 </body>
 </html>
