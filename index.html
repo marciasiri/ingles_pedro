@@ -570,10 +570,7 @@
     function getThemeProgress() {
         try {
             const progress = JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
-            // --- DEMO MODE OVERRIDES ---
-            progress["Body"] = progress["Body"] || 2; 
-            progress["Family"] = progress["Family"] || 3; 
-            progress["Animals"] = progress["Animals"] || 4;
+            // --- DEMO MODE DEACTIVATED ---
             return progress;
         } catch (e) {
             return {};
@@ -655,10 +652,7 @@
         init() {
             // Calculate total unique words
             const totalUniqueWords = Object.values(WORD_DATA_DETAILS).reduce((acc, cat) => acc + cat.length, 0);
-            // Each level asks each word twice (2 questions per word per level)
-            // Each correct answer gives 0.5 points.
-            // 2 questions * 0.5 pts = 1 pt per word per level.
-            // 3 levels * 1 pt = 3 pts per word.
+            // Points: 3 levels * (words * 2 questions * 0.5 pts) = words * 3
             this.state.maxPossibleScore = totalUniqueWords * 3;
 
             this.dom.level2PlayBtns = Array.from(this.dom.audioOptionsContainer.querySelectorAll('.level2-play-btn'));
@@ -709,7 +703,13 @@
         showHomeScreen() {
             this.state.currentScreen = 'HOME';
             this.updateScreen();
-            const categories = Object.keys(WORD_DATA_DETAILS);
+            
+            // Get all categories, exclude "Others" for sorting
+            let categories = Object.keys(WORD_DATA_DETAILS).sort();
+            categories = categories.filter(c => c !== "Others");
+            // Add "Others" back to the very end
+            categories.push("Others");
+
             this.dom.categoryList.innerHTML = '';
             const progress = getThemeProgress();
 
