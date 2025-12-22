@@ -444,7 +444,7 @@
     const WORD_DATA_DETAILS = {
         "Animals": [
             { word: "Bird", ext: ".png" }, { word: "Cat", ext: ".png" }, { word: "Chicken", ext: ".png" },
-            { word: "Cow", ext: ".png" }, { word: "Dog", ext: ".jpg" }, { word: "Dog", ext: ".png" },
+            { word: "Cow", ext: ".png" }, { word: "Dog", ext: ".jpg" },
             { word: "Duck", ext: ".jpg" }, { word: "Elephant", ext: ".jpg" }, { word: "Fish", ext: ".png" }, { word: "Frog", ext: ".jpg" },
             { word: "Horse", ext: ".jpg" }, { word: "Lion", ext: ".jpg" }, { word: "Monkey", ext: ".jpg" },
             { word: "Pig", ext: ".jpg" }, { word: "Rabbit", ext: ".jpg" }, { word: "Snake", ext: ".jpg" },
@@ -796,7 +796,7 @@
                 selectedImage.classList.add('correct');
                 this.state.score += 0.5; this.state.themeScore += 0.5;
                 this.updateGlobalScore();
-                this.dom.feedbackText1.textContent = `Correct!`;
+                this.dom.feedbackText1.textContent = `Correct: ${this.state.currentWord.word} !`;
                 this.dom.feedbackText1.className = 'text-lg font-bold text-green-600';
                 this.dom.nextLevel1Btn.classList.remove('hidden');
             } else {
@@ -839,7 +839,7 @@
                 selectedButton.classList.add('correct');
                 this.state.score += 0.5; this.state.themeScore += 0.5;
                 this.updateGlobalScore();
-                this.dom.feedbackText2.textContent = `Correct!`;
+                this.dom.feedbackText2.textContent = `Correct: ${this.state.currentWord.word} !`;
                 this.dom.feedbackText2.className = 'text-lg font-bold text-green-600';
 
                 if (this.state.categoryWordsQueue.length > 0) {
