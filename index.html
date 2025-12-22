@@ -265,6 +265,26 @@
         #skip-level3-btn {
             color: white; 
         }
+
+        /* --- PROGRESS SCALE STYLES --- */
+        .progress-scale-container {
+            flex-grow: 1;
+            margin-left: 0.75rem;
+            background-color: #e5e7eb;
+            height: 0.6rem;
+            border-radius: 9999px;
+            overflow: hidden;
+            position: relative;
+            min-width: 60px;
+            max-width: 120px;
+            border: 1px solid #d1d5db;
+        }
+        #progress-scale-fill {
+            height: 100%;
+            background-color: #10b981; /* Emerald-500 */
+            transition: width 0.5s ease-out;
+            width: 0%;
+        }
     </style>
 </head>
 <body>
@@ -273,9 +293,14 @@
     <header class="text-center pb-4 mb-4 border-b-2 border-gray-100">
         <h1 class="text-3xl font-extrabold text-gray-800">Let's learn English</h1>
 
-        <div class="mt-3 flex justify-between items-center px-4">
-            <span class="text-lg font-bold text-gray-700">Global Score: <span id="score">0.0</span></span>
-            <button id="back-to-home-btn" class="text-sm text-blue-600 hover:text-blue-800 font-semibold hidden">← Change Theme</button>
+        <div class="mt-3 flex justify-between items-center px-2">
+            <div class="flex items-center flex-1">
+                <span class="text-base sm:text-lg font-bold text-gray-700 whitespace-nowrap">Score: <span id="score">0.0</span></span>
+                <div class="progress-scale-container" id="score-scale-box">
+                    <div id="progress-scale-fill"></div>
+                </div>
+            </div>
+            <button id="back-to-home-btn" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-semibold hidden ml-2">← Themes</button>
         </div>
     </header>
 
@@ -574,10 +599,12 @@
             isAwaitingAnswer: false,
             currentQuestionNumber: 0,
             totalQuestions: 0,
+            maxPossibleScore: 0
         },
         
         dom: {
             scoreDisplay: document.getElementById('score'),
+            progressBarFill: document.getElementById('progress-scale-fill'),
             homeScreen: document.getElementById('home-screen'),
             level1Screen: document.getElementById('level1-screen'),
             level2Screen: document.getElementById('level2-screen'),
@@ -626,6 +653,14 @@
         },
 
         init() {
+            // Calculate total unique words
+            const totalUniqueWords = Object.values(WORD_DATA_DETAILS).reduce((acc, cat) => acc + cat.length, 0);
+            // Each level asks each word twice (2 questions per word per level)
+            // Each correct answer gives 0.5 points.
+            // 2 questions * 0.5 pts = 1 pt per word per level.
+            // 3 levels * 1 pt = 3 pts per word.
+            this.state.maxPossibleScore = totalUniqueWords * 3;
+
             this.dom.level2PlayBtns = Array.from(this.dom.audioOptionsContainer.querySelectorAll('.level2-play-btn'));
             this.dom.level2SelectBtns = Array.from(this.dom.audioOptionsContainer.querySelectorAll('.level2-select-btn'));
             
@@ -660,7 +695,15 @@
                 case 'LEVEL3': this.dom.level3Screen.classList.remove('hidden'); break;
                 case 'LEVEL_COMPLETE': this.dom.levelCompleteScreen.classList.remove('hidden'); break;
             }
+            this.updateGlobalScore();
+        },
+
+        updateGlobalScore() {
             this.dom.scoreDisplay.textContent = this.state.score.toFixed(1);
+            if (this.state.maxPossibleScore > 0) {
+                const percentage = (this.state.score / this.state.maxPossibleScore) * 100;
+                this.dom.progressBarFill.style.width = `${Math.min(percentage, 100)}%`;
+            }
         },
 
         showHomeScreen() {
@@ -692,7 +735,6 @@
             this.state.themeScore = 0.0;
             this.state.currentLevel = currentLevel;
 
-            // If level 4+, show the celebration screen directly
             if (currentLevel >= 4) {
                 this.showComplete(3);
                 return;
@@ -751,7 +793,7 @@
                 this.state.isAwaitingAnswer = false;
                 selectedImage.classList.add('correct');
                 this.state.score += 0.5; this.state.themeScore += 0.5;
-                this.dom.scoreDisplay.textContent = this.state.score.toFixed(1);
+                this.updateGlobalScore();
                 this.dom.feedbackText1.textContent = `Correct!`;
                 this.dom.feedbackText1.className = 'text-lg font-bold text-green-600';
                 this.dom.nextLevel1Btn.classList.remove('hidden');
@@ -794,15 +836,13 @@
                 this.state.isAwaitingAnswer = false;
                 selectedButton.classList.add('correct');
                 this.state.score += 0.5; this.state.themeScore += 0.5;
-                this.dom.scoreDisplay.textContent = this.state.score.toFixed(1);
+                this.updateGlobalScore();
                 this.dom.feedbackText2.textContent = `Correct!`;
                 this.dom.feedbackText2.className = 'text-lg font-bold text-green-600';
 
-                // Check if more words remain in Level 2
                 if (this.state.categoryWordsQueue.length > 0) {
                     this.dom.nextLevel2Btn.classList.remove('hidden');
                 } else {
-                    // Automatically transition to success screen
                     setTimeout(() => this.finishLevel2(), 1500);
                 }
             } else {
@@ -848,6 +888,7 @@
             if (recognized === target || recognized.replace(/[- ]/g, '') === target.replace(/[- ]/g, '')) {
                 this.state.isAwaitingAnswer = false;
                 this.state.score += 0.5; this.state.themeScore += 0.5;
+                this.updateGlobalScore();
                 this.dom.feedbackText3.textContent = `Success! You said "${this.state.currentWord.word}"`;
                 this.dom.feedbackText3.className = 'text-lg font-bold text-green-600';
                 this.dom.nextLevel3Btn.classList.remove('hidden');
