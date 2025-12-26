@@ -775,6 +775,14 @@
             this.updateScreen();
         },
 
+        scrollToTitle() {
+            const titleId = `current-theme-title-${this.state.currentLevel}`;
+            const el = document.getElementById(titleId);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        },
+
         loadNextLevel1Question() {
             if (this.state.categoryWordsQueue.length === 0) { this.finishLevel1(); return; }
             this.state.currentQuestionNumber++;
@@ -792,6 +800,7 @@
             this.state.currentQuestionWords = [this.state.currentWord, ...distractors].sort(() => Math.random() - 0.5);
             this.renderLevel1ImageOptions();
             this.speakWord(this.state.currentWord.word);
+            this.scrollToTitle();
         },
 
         renderLevel1ImageOptions() {
@@ -847,6 +856,7 @@
                 this.dom.level2PlayBtns[idx].onclick = () => this.speakWord(word);
                 btn.onclick = () => this.checkLevel2Answer(word, btn);
             });
+            this.scrollToTitle();
         },
 
         checkLevel2Answer(selectedWord, selectedButton) {
@@ -899,6 +909,7 @@
             this.state.currentWord = this.state.categoryWordsQueue.pop();
             this.dom.targetImage3.src = this.getWordImageUrl(this.state.currentCategory, this.state.currentWord);
             this.dom.recognitionStatus.textContent = 'Pronounce the word you see.';
+            this.scrollToTitle();
         },
         
         startSpeechRecognition() {
