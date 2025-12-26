@@ -212,7 +212,7 @@
             color: white;
             box-shadow: 0 4px #3730a3;
             height: 48px;
-            font-size: 1rem;
+            font-size: 1.25rem; /* Increased for better icon visibility */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -223,7 +223,7 @@
              transform: translateY(4px);
         }
         .level2-play-btn .fas {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
         }
         
         .level2-select-btn {
@@ -231,7 +231,10 @@
             color: white;
             box-shadow: 0 4px #b45309; /* Amber-700 */
             height: 48px;
-            font-size: 1rem;
+            font-size: 1.5rem; /* Increased for better icon visibility */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Level 2 Answer Feedback Colors (applied to Select button) */
@@ -293,7 +296,7 @@
 
 <div class="game-container">
     <header class="text-center pb-4 mb-4 border-b-2 border-gray-100">
-        <h1 class="text-3xl font-extrabold text-gray-800">Let's learn English</h1>
+        <h1 id="main-title" class="text-3xl font-extrabold text-gray-800">Let's learn English</h1>
 
         <div class="mt-3 flex justify-between items-center px-2">
             <div class="flex items-center flex-1">
@@ -316,7 +319,7 @@
 
         <!-- 2. LEVEL 1 QUIZ SCREEN (Audio to Image) -->
         <div id="level1-screen" class="hidden text-center p-4">
-            <h2 id="current-theme-title-1" class="text-2xl font-bold level-title-container">Theme: Loading...</h2>
+            <h2 id="current-theme-title-1" class="text-2xl font-bold level-title-container">Loading...</h2>
 
             <p class="text-lg font-semibold text-gray-600 mb-6">
                 Question <span id="current-question-count-1">0</span> / <span id="total-question-count-1">0</span>
@@ -327,7 +330,7 @@
                     <i class="fas fa-volume-up"></i>
                 </span>
             </button>
-            <p class="text-lg font-semibold text-gray-600 mb-6">Tap to hear the word!</p>
+            <p id="l1-instruction" class="text-lg font-semibold text-gray-600 mb-6">Tap to hear the word!</p>
 
             <div id="image-options-container" class="grid grid-cols-3 gap-4"></div>
 
@@ -343,7 +346,7 @@
         
         <!-- 3. LEVEL 2 QUIZ SCREEN (Image to Audio) -->
         <div id="level2-screen" class="hidden text-center p-4">
-            <h2 id="current-theme-title-2" class="text-2xl font-bold level-title-container">Theme: Loading...</h2>
+            <h2 id="current-theme-title-2" class="text-2xl font-bold level-title-container">Loading...</h2>
             
             <p class="text-lg font-semibold text-gray-600 mb-6">
                 Question <span id="current-question-count-2">0</span> / <span id="total-question-count-2">0</span>
@@ -353,20 +356,20 @@
                 <img id="target-image-2" class="max-h-full max-w-full rounded-lg shadow-xl border-4 border-gray-200" src="" alt="Target Image">
             </div>
 
-            <p class="text-lg font-semibold text-gray-600 mb-6">Hear and select the word matching the image</p>
+            <p id="l2-instruction" class="text-lg font-semibold text-gray-600 mb-6">Hear and select the word matching the image</p>
 
             <div id="audio-options-container" class="grid grid-cols-3 gap-4">
                 <div class="flex flex-col gap-2">
-                    <button class="level2-play-btn game-button"><i class="fas fa-volume-up"></i> Listen</button>
-                    <button class="level2-select-btn game-button">Select</button>
+                    <button class="level2-play-btn game-button"><i class="fas fa-volume-up"></i></button>
+                    <button class="level2-select-btn game-button"><i class="fas fa-check-square"></i></button>
                 </div>
                 <div class="flex flex-col gap-2">
-                    <button class="level2-play-btn game-button"><i class="fas fa-volume-up"></i> Listen</button>
-                    <button class="level2-select-btn game-button">Select</button>
+                    <button class="level2-play-btn game-button"><i class="fas fa-volume-up"></i></button>
+                    <button class="level2-select-btn game-button"><i class="fas fa-check-square"></i></button>
                 </div>
                 <div class="flex flex-col gap-2">
-                    <button class="level2-play-btn game-button"><i class="fas fa-volume-up"></i> Listen</button>
-                    <button class="level2-select-btn game-button">Select</button>
+                    <button class="level2-play-btn game-button"><i class="fas fa-volume-up"></i></button>
+                    <button class="level2-select-btn game-button"><i class="fas fa-check-square"></i></button>
                 </div>
             </div>
 
@@ -382,7 +385,7 @@
 
         <!-- 4. LEVEL 3 QUIZ SCREEN (Speech Recognition) -->
         <div id="level3-screen" class="text-center p-4 hidden">
-            <h2 id="current-theme-title-3" class="text-2xl font-bold level-title-container">Theme: Family - Level 3</h2>
+            <h2 id="current-theme-title-3" class="text-2xl font-bold level-title-container">Loading...</h2>
             <p class="text-lg font-semibold text-gray-600 mb-6">
                 Question <span id="current-question-count-3">0</span> / <span id="total-question-count-3">0</span>
             </p>
@@ -391,7 +394,7 @@
                 <img id="target-image-3" class="max-h-full max-w-full rounded-lg shadow-xl border-4 border-gray-200" src="" alt="Target Image">
             </div>
 
-            <p class="text-lg font-semibold text-gray-600 mb-6">Pronounce the word matching the image:</p>
+            <p id="l3-instruction" class="text-lg font-semibold text-gray-600 mb-6">Pronounce the word matching the image:</p>
 
             <div class="flex justify-center items-center space-x-6">
                 <button id="mic-btn-3" class="tts-button">
@@ -611,6 +614,7 @@
             levelCompleteScreen: document.getElementById('level-complete-screen'),
             categoryList: document.getElementById('category-list'),
             backToHomeBtn: document.getElementById('back-to-home-btn'),
+            mainTitle: document.getElementById('main-title'),
             
             // L1
             currentThemeTitle1: document.getElementById('current-theme-title-1'),
@@ -621,6 +625,7 @@
             nextLevel1Btn: document.getElementById('next-level1-btn'),
             currentQuestionCount1: document.getElementById('current-question-count-1'),
             totalQuestionCount1: document.getElementById('total-question-count-1'),
+            l1Instruction: document.getElementById('l1-instruction'),
 
             // L2
             currentThemeTitle2: document.getElementById('current-theme-title-2'),
@@ -632,6 +637,7 @@
             totalQuestionCount2: document.getElementById('total-question-count-2'),
             level2PlayBtns: [],
             level2SelectBtns: [],
+            l2Instruction: document.getElementById('l2-instruction'),
             
             // L3
             currentThemeTitle3: document.getElementById('current-theme-title-3'),
@@ -644,6 +650,7 @@
             nextLevel3Btn: document.getElementById('next-level3-btn'),
             currentQuestionCount3: document.getElementById('current-question-count-3'),
             totalQuestionCount3: document.getElementById('total-question-count-3'),
+            l3Instruction: document.getElementById('l3-instruction'),
             
             // Complete
             completedTheme: document.getElementById('completed-theme'),
@@ -654,7 +661,6 @@
         init() {
             // Calculate total unique words
             const totalUniqueWords = Object.values(WORD_DATA_DETAILS).reduce((acc, cat) => acc + cat.length, 0);
-            // Points: 3 levels * (words * 2 questions * 0.5 pts) = words * 3
             this.state.maxPossibleScore = totalUniqueWords * 3;
 
             this.dom.level2PlayBtns = Array.from(this.dom.audioOptionsContainer.querySelectorAll('.level2-play-btn'));
@@ -684,6 +690,13 @@
             screens.forEach(s => s.classList.add('hidden'));
             this.dom.backToHomeBtn.classList.remove('hidden');
             
+            // Remove main title if not on HOME
+            if (this.state.currentScreen === 'HOME') {
+                this.dom.mainTitle.classList.remove('hidden');
+            } else {
+                this.dom.mainTitle.classList.add('hidden');
+            }
+
             switch (this.state.currentScreen) {
                 case 'HOME': this.dom.homeScreen.classList.remove('hidden'); this.dom.backToHomeBtn.classList.add('hidden'); break;
                 case 'LEVEL1': this.dom.level1Screen.classList.remove('hidden'); break;
@@ -706,10 +719,8 @@
             this.state.currentScreen = 'HOME';
             this.updateScreen();
             
-            // Get all categories, exclude "Others" for sorting
             let categories = Object.keys(WORD_DATA_DETAILS).sort();
             categories = categories.filter(c => c !== "Others");
-            // Add "Others" back to the very end
             categories.push("Others");
 
             this.dom.categoryList.innerHTML = '';
@@ -749,14 +760,16 @@
 
             if (currentLevel === 1) {
                 this.state.currentScreen = 'LEVEL1';
-                this.dom.currentThemeTitle1.textContent = `Theme: ${category} - Level 1`;
+                this.dom.currentThemeTitle1.textContent = `${category} - Level 1`;
                 this.loadNextLevel1Question();
             } else if (currentLevel === 2) {
                 this.state.currentScreen = 'LEVEL2';
-                this.dom.currentThemeTitle2.textContent = `Theme: ${category} - Level 2`;
+                this.dom.currentThemeTitle2.textContent = `${category} - Level 2`;
                 this.loadNextLevel2Question();
             } else {
-                this.startLevel3(category);
+                this.state.currentScreen = 'LEVEL3';
+                this.dom.currentThemeTitle3.textContent = `${category} - Level 3`;
+                this.loadNextLevel3Question();
             }
             this.updateScreen();
         },
@@ -766,6 +779,10 @@
             this.state.currentQuestionNumber++;
             this.dom.currentQuestionCount1.textContent = this.state.currentQuestionNumber;
             this.dom.totalQuestionCount1.textContent = this.state.totalQuestions;
+            
+            // Only show instruction on the first question
+            this.dom.l1Instruction.classList.toggle('hidden', this.state.currentQuestionNumber > 1);
+
             this.state.isAwaitingAnswer = true;
             this.dom.nextLevel1Btn.classList.add('hidden');
             this.dom.feedbackText1.textContent = '';
@@ -811,6 +828,10 @@
             this.state.currentQuestionNumber++;
             this.dom.currentQuestionCount2.textContent = this.state.currentQuestionNumber;
             this.dom.totalQuestionCount2.textContent = this.state.totalQuestions;
+
+            // Only show instruction on the first question
+            this.dom.l2Instruction.classList.toggle('hidden', this.state.currentQuestionNumber > 1);
+
             this.state.isAwaitingAnswer = true;
             this.dom.nextLevel2Btn.classList.add('hidden');
             this.dom.feedbackText2.textContent = '';
@@ -857,7 +878,7 @@
         startLevel3(category) {
             if (!recognition) { alert("Speech Recognition not supported."); this.showHomeScreen(); return; }
             this.state.currentScreen = 'LEVEL3';
-            this.dom.currentThemeTitle3.textContent = `Theme: ${category} - Level 3`;
+            this.dom.currentThemeTitle3.textContent = `${category} - Level 3`;
             this.loadNextLevel3Question();
         },
         
@@ -866,6 +887,10 @@
             this.state.currentQuestionNumber++;
             this.dom.currentQuestionCount3.textContent = this.state.currentQuestionNumber;
             this.dom.totalQuestionCount3.textContent = this.state.totalQuestions;
+
+            // Only show instruction on the first question
+            this.dom.l3Instruction.classList.toggle('hidden', this.state.currentQuestionNumber > 1);
+
             this.state.isAwaitingAnswer = true;
             this.dom.nextLevel3Btn.classList.add('hidden');
             document.getElementById('skip-level3-btn').classList.remove('hidden');
